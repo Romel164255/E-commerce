@@ -21,10 +21,20 @@ app.use(express.json());
 
 
 app.get("/health", async (req, res) => {
+  try{
   const r = await pool.query("SELECT 1");
   res.json({ ok: true });
+  }
+  catch{
+    console.error("USER QUERY ERROR:", Error.message);
+    Res.status(500).json({error:"Failed to fetch users"});
+  }
 });
 
+app.get("/users", async (req,res)=> {
+  const result = await pool.query("SELECT id, email, role, CREATED_at FROM users");
+  res.send(result.rows)
+})
 console.log("DB URL exists?", !!process.env.DATABASE_URL);
 
 
