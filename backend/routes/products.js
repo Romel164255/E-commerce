@@ -1,45 +1,88 @@
 import express from "express";
+import asyncHandler from "express-async-handler";
 import { pool } from "../db.js";
 import { authenticateToken } from "../middleware/auth.js";
+import { z } from "zod";
+import { validate } from "../middleware/validate.js";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT id, name, description, price, stock FROM products ORDER BY created_at DESC"
-    );
+/* =====================================================
+   VALIDATION SCHEMA
+===================================================== */
 
-    res.json(result.rows);
-
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: "Failed to fetch products" });
-  }
+const createProductSchema = z.object({
+  name: z.string().min(2),
+  description: z.string().min(5),
+  price: z.number().positive(),
+  stock: z.number().int().nonnegative()
 });
 
-router.post("/", authenticateToken, async (req, res) => {
+/* =====================================================
+   GET PRODUCTS (WITH PAGINATION)
+===================================================== */
 
-  if (req.user.role !== "ADMIN") {
-    return res.status(403).json({ error: "Admin only" });
-  }
+router.get(
+  "/",
+  asyncHandler(async (req, res) => {
 
-  const { name, description, price, stock } = req.body;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
 
-  try {
     const result = await pool.query(
-      `INSERT INTO products (name, description, price, stock)
-       VALUES ($1, $2, $3, $4)
-       RETURNING *`,
+      `
+  SELECT 
+    id,
+    title,
+    description,
+    price,
+    stock,
+    image_url,
+    category,
+    gender
+  FROM products
+  ORDER BY created_at DESC
+  LIMIT $1 OFFSET $2
+      `,
+      [limit, offset]
+    );
+
+    res.json({
+      page,
+      limit,
+      data: result.rows
+    });
+  })
+);
+
+/* =====================================================
+   CREATE PRODUCT (ADMIN ONLY)
+===================================================== */
+
+router.post(
+  "/",
+  authenticateToken,
+  validate(createProductSchema),
+  asyncHandler(async (req, res) => {
+
+    if (req.user.role !== "ADMIN") {
+      return res.status(403).json({ error: "Admin only" });
+    }
+
+    const { name, description, price, stock } = req.body;
+
+    const result = await pool.query(
+      `
+      INSERT INTO products (name, description, price, stock)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+      `,
       [name, description, price, stock]
     );
 
     res.status(201).json(result.rows[0]);
-
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).json({ error: "Failed to create product" });
-  }
-});
+  })
+);
 
 export default router;
