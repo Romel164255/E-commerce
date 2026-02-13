@@ -21,40 +21,57 @@ const createProductSchema = z.object({
 /* =====================================================
    GET PRODUCTS (WITH PAGINATION)
 ===================================================== */
+router.get("/", asyncHandler(async (req, res) => {
 
-router.get(
-  "/",
-  asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = 30;
+  const offset = (page - 1) * limit;
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const offset = (page - 1) * limit;
+  const sort = req.query.sort || "new";
+  const category = req.query.category;
+  const gender = req.query.gender;
 
-    const result = await pool.query(
-      `
-  SELECT 
-    id,
-    title,
-    description,
-    price,
-    stock,
-    image_url,
-    category,
-    gender
-  FROM products
-  ORDER BY created_at DESC
-  LIMIT $1 OFFSET $2
-      `,
-      [limit, offset]
-    );
+  let query = `
+    SELECT id, title, price, image_url, category, gender
+    FROM products
+  `;
 
-    res.json({
-      page,
-      limit,
-      data: result.rows
-    });
-  })
-);
+  let conditions = [];
+  let values = [];
+  let index = 1;
+
+  if (category) {
+    conditions.push(`category = $${index++}`);
+    values.push(category);
+  }
+
+  if (gender) {
+    conditions.push(`gender = $${index++}`);
+    values.push(gender);
+  }
+
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
+  if (sort === "price_asc") {
+    query += " ORDER BY price ASC";
+  } else if (sort === "price_desc") {
+    query += " ORDER BY price DESC";
+  } else {
+    query += " ORDER BY created_at DESC";
+  }
+
+  query += ` LIMIT $${index++} OFFSET $${index++}`;
+  values.push(limit, offset);
+
+  const result = await pool.query(query, values);
+
+  res.json({
+    page,
+    data: result.rows
+  });
+}));
 
 /* =====================================================
    CREATE PRODUCT (ADMIN ONLY)

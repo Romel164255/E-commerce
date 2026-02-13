@@ -210,3 +210,12 @@ body {
 .page-content {
   padding: 30px;
 }
+.filter-bar {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.filter-bar select {
+  padding: 6px 10px;
+}
