@@ -7,59 +7,68 @@ import { validate } from "../middleware/validate.js";
 
 const router = express.Router();
 
-/* =====================================================
+/* ===============================
    VALIDATION SCHEMA
-===================================================== */
+=============================== */
 
 const createProductSchema = z.object({
-  name: z.string().min(2),
+  title: z.string().min(2),
   description: z.string().min(5),
   price: z.number().positive(),
   stock: z.number().int().nonnegative()
 });
 
-/* =====================================================
-   GET PRODUCTS (WITH PAGINATION)
-===================================================== */
+/* ===============================
+   GET PRODUCTS (FILTER + SORT + PAGINATION)
+=============================== */
+
 router.get("/", asyncHandler(async (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
-  const limit = 30;
+  const limit = 14;
   const offset = (page - 1) * limit;
 
   const sort = req.query.sort || "new";
   const category = req.query.category;
   const gender = req.query.gender;
 
-  let query = `
-    SELECT id, title, price, image_url, category, gender
-    FROM products
-  `;
-
-  let conditions = [];
+  let whereClauses = [];
   let values = [];
   let index = 1;
 
   if (category) {
-    conditions.push(`category = $${index++}`);
+    whereClauses.push(`category = $${index++}`);
     values.push(category);
   }
 
   if (gender) {
-    conditions.push(`gender = $${index++}`);
+    whereClauses.push(`gender = $${index++}`);
     values.push(gender);
   }
 
-  if (conditions.length > 0) {
-    query += " WHERE " + conditions.join(" AND ");
-  }
+  const whereSQL = whereClauses.length
+    ? "WHERE " + whereClauses.join(" AND ")
+    : "";
+
+  /* ---------- TOTAL COUNT ---------- */
+  const countQuery = `SELECT COUNT(*) FROM products ${whereSQL}`;
+  const countResult = await pool.query(countQuery, values);
+  const total = parseInt(countResult.rows[0].count);
+  const totalPages = Math.ceil(total / limit);
+
+  /* ---------- MAIN QUERY ---------- */
+  let query = `
+    SELECT id, title, price, image_url, category, gender
+    FROM products
+    ${whereSQL}
+  `;
 
   if (sort === "price_asc") {
-    query += " ORDER BY price ASC";
+    query += " ORDER BY price ASC, id DESC";
   } else if (sort === "price_desc") {
-    query += " ORDER BY price DESC";
+    query += " ORDER BY price DESC, id DESC";
   } else {
-    query += " ORDER BY created_at DESC";
+    query += " ORDER BY created_at DESC, id DESC";
   }
 
   query += ` LIMIT $${index++} OFFSET $${index++}`;
@@ -69,13 +78,16 @@ router.get("/", asyncHandler(async (req, res) => {
 
   res.json({
     page,
+    total,
+    totalPages,
+    limit,
     data: result.rows
   });
 }));
 
-/* =====================================================
-   CREATE PRODUCT (ADMIN ONLY)
-===================================================== */
+/* ===============================
+   CREATE PRODUCT (ADMIN)
+=============================== */
 
 router.post(
   "/",
@@ -87,15 +99,15 @@ router.post(
       return res.status(403).json({ error: "Admin only" });
     }
 
-    const { name, description, price, stock } = req.body;
+    const { title, description, price, stock } = req.body;
 
     const result = await pool.query(
       `
-      INSERT INTO products (name, description, price, stock)
+      INSERT INTO products (title, description, price, stock)
       VALUES ($1, $2, $3, $4)
       RETURNING *
       `,
-      [name, description, price, stock]
+      [title, description, price, stock]
     );
 
     res.status(201).json(result.rows[0]);

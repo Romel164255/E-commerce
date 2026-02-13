@@ -16,63 +16,73 @@ export default function Cart() {
     try {
       await api.post("/orders/checkout");
       alert("Order placed!");
+      setCart([]); // clear frontend after checkout
     } catch {
       alert("Checkout failed");
     }
   };
-  
+
   const removeItem = async (id) => {
-  try {
-    await api.delete(`/cart/${id}`);
-    setCart(cart.filter(item => item.id !== id));
-  } catch (err) {
-    console.error(err);
-  }
+    try {
+      await api.delete(`/cart/${id}`);
+      setCart(cart.filter(item => item.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
+  /* ===== Calculations ===== */
+  const totalItems = cart.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
   const total = cart.reduce(
-  (sum, item) => sum + item.price * item.quantity,
-  0
+    (sum, item) => sum + item.price * item.quantity,
+    0
   );
 
   return (
     <div className="cart-container">
       <h2 className="page-title">Cart</h2>
 
-      {cart.map(item => (
-  <div key={item.id} className="cart-item">
-
-    <img
-      src={`http://localhost:5000/uploads/${item.image_url}`}
-      alt={item.title}
-      className="cart-image"
-    />
-
-    <div className="cart-info">
-      <h4>{item.title}</h4>
-      <p>₹{item.price}</p>
-      <p>Qty: {item.quantity}</p>
-      <button
-      className="danger-btn"
-      onClick={() => removeItem(item.id)}
-      >
-      Remove
-      </button>
-    </div>
-
-    </div>
-    ))}
-
       {cart.length > 0 && (
         <div className="cart-total">
-          <h3>Total: ₹{total}</h3>
+          <h3>
+            Subtotal ({totalItems} {totalItems === 1 ? "item" : "items"}): ₹{total}
+          </h3>
+
           <button className="primary-btn" onClick={checkout}>
-          Checkout
+            Proceed to Buy
           </button>
         </div>
-        
-        
       )}
+
+      {cart.map(item => (
+        <div key={item.id} className="cart-item">
+
+          <img
+            src={`http://localhost:5000/uploads/${item.image_url}`}
+            alt={item.title}
+            className="cart-image"
+          />
+
+          <div className="cart-info">
+            <h4>{item.title}</h4>
+            <p>₹{item.price}</p>
+            <p>Qty: {item.quantity}</p>
+
+            <button
+              className="danger-btn"
+              onClick={() => removeItem(item.id)}
+            >
+              Remove
+            </button>
+          </div>
+
+        </div>
+      ))}
+
     </div>
   );
 }

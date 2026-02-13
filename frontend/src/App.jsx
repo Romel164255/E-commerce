@@ -40,7 +40,7 @@ function App() {
 
       {/* ================= HEADER BAR ================= */}
       <header className="top-header">
-        <h1 className="logo">MyStore</h1>
+        <h1 className="logo">Outfito .</h1>
 
         <div className="user-section">
           {isLoggedIn ? (
