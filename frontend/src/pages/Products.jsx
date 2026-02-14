@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 import { useCart } from "../context/CartContext";
+import QuantitySelector from "../components/QuantitySelector";
 
 export default function Products() {
-
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = parseInt(searchParams.get("page")) || 1;
 
@@ -24,7 +24,7 @@ export default function Products() {
 
   const limit = 14;
 
-  /* Sync URL */
+  // Sync state to URL
   useEffect(() => {
     setSearchParams({
       page,
@@ -34,11 +34,13 @@ export default function Products() {
     });
   }, [page, sort, gender, category]);
 
-  /* Fetch Products */
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
+        setError("");
+
         const params = new URLSearchParams({
           page,
           ...(sort && { sort }),
@@ -51,7 +53,6 @@ export default function Products() {
         setProducts(res.data.data);
         setTotalPages(res.data.totalPages);
         setTotalProducts(res.data.total);
-
       } catch {
         setError("Failed to load products");
       } finally {
@@ -81,9 +82,9 @@ export default function Products() {
 
   return (
     <div className="products-container">
-
       <h2 className="page-title">Products</h2>
 
+      {/* Filters */}
       <div className="filter-bar">
         <select value={sort} onChange={(e) => { setPage(1); setSort(e.target.value); }}>
           <option value="">Sort</option>
@@ -106,6 +107,7 @@ export default function Products() {
         </select>
       </div>
 
+      {/* Count */}
       {totalProducts > 0 && (
         <p className="product-count">
           Showing {start}–{end} of {totalProducts} products
@@ -115,14 +117,15 @@ export default function Products() {
       {loading && <p>Loading...</p>}
       {error && <p className="error-text">{error}</p>}
 
+      {/* Grid */}
       <div className="product-grid">
         {products.map((p) => {
-
-          const cartItem = cart.find(item => item.product_id === p.id);
+          const cartItem = cart.find(
+            (item) => item.product_id === p.id
+          );
 
           return (
             <div key={p.id} className="product-card">
-
               <img
                 src={`http://localhost:5000/uploads/${p.image_url}`}
                 alt={p.title}
@@ -133,42 +136,31 @@ export default function Products() {
               <p className="product-price">₹{p.price}</p>
 
               {cartItem ? (
-                <div className="quantity-controls">
-                  <button
-                    onClick={() =>
-                      updateQuantity(cartItem.id, cartItem.quantity - 1)
-                    }
-                  >
-                    -
-                  </button>
-
-                  <span>{cartItem.quantity}</span>
-
-                  <button
-                    onClick={() =>
-                      updateQuantity(cartItem.id, cartItem.quantity + 1)
-                    }
-                  >
-                    +
-                  </button>
-                </div>
+                <QuantitySelector
+                  quantity={cartItem.quantity}
+                  onDecrease={() =>
+                    updateQuantity(cartItem.id, cartItem.quantity - 1)
+                  }
+                  onIncrease={() =>
+                    updateQuantity(cartItem.id, cartItem.quantity + 1)
+                  }
+                />
               ) : (
                 <button
                   className="primary-btn"
-                  onClick={() => addToCart(p.id)}
+                  onClick={() => addToCart(p)}
                 >
                   Add to Cart
                 </button>
               )}
-
             </div>
           );
         })}
       </div>
 
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="pagination">
-
           <button disabled={page === 1} onClick={() => setPage(page - 1)}>
             Prev
           </button>
@@ -186,10 +178,8 @@ export default function Products() {
           <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
             Next
           </button>
-
         </div>
       )}
-
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useCart } from "./context/CartContext";
 
 import Products from "./pages/Products";
@@ -15,26 +15,21 @@ function App() {
   const navigate = useNavigate();
   const { totalItems } = useCart();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
+  // Always read fresh auth state from localStorage
+  const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
+  const isLoggedIn = !!token;
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const email = localStorage.getItem("email");
-
-    setIsLoggedIn(!!token);
-    setUserEmail(email || "");
-  }, []);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("email");
 
-    setIsLoggedIn(false);
-    setUserEmail("");
-
+    setMenuOpen(false);
     navigate("/");
+    window.location.reload(); // refresh UI state
   };
 
   return (
@@ -44,19 +39,38 @@ function App() {
       <header className="top-header">
         <h1 className="logo">Outfito.</h1>
 
-        <div className="header-right">
-          {isLoggedIn ? (
-            <>
-              <span className="user-email">👤 {userEmail}</span>
-              <button className="logout-btn" onClick={logout}>
-                Logout
-              </button>
-            </>
-          ) : (
-            <>
-              <Link className="auth-link" to="/login">Login</Link>
-              <Link className="auth-link" to="/register">Register</Link>
-            </>
+        {/* Account Dropdown */}
+        <div
+          className="account-dropdown"
+          onMouseEnter={() => setMenuOpen(true)}
+          onMouseLeave={() => setMenuOpen(false)}
+        >
+          <div className="account-trigger">
+            👤 Account
+          </div>
+
+          {menuOpen && (
+            <div className="dropdown-menu">
+              {isLoggedIn ? (
+                <>
+                  <div className="dropdown-email">
+                    {email}
+                  </div>
+                  <button className="dropdown-btn" onClick={logout}>
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className="dropdown-link">
+                    Login
+                  </Link>
+                  <Link to="/register" className="dropdown-link">
+                    Register
+                  </Link>
+                </>
+              )}
+            </div>
           )}
         </div>
       </header>
@@ -69,11 +83,10 @@ function App() {
           <Link className="nav-link" to="/admin">Admin</Link>
         </div>
 
-        {/* Cart Icon on Far Right */}
         <div className="nav-right">
           <Link to="/cart" className="cart-icon-wrapper">
             <img
-              src="/shopping-cart.png"   /* image inside public folder */
+              src="/shopping-cart.png"
               alt="Cart"
               className="cart-icon"
             />

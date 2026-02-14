@@ -1,68 +1,84 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import api from "../api/axios";
+import { createContext, useContext, useState, useMemo, useEffect } from "react";
 
 const CartContext = createContext();
 
-export const useCart = () => useContext(CartContext);
+export function CartProvider({ children }) {
+  const [cart, setCart] = useState(() => {
+    const stored = localStorage.getItem("cart");
+    return stored ? JSON.parse(stored) : [];
+  });
 
-export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
-  // Load cart from backend
-  const fetchCart = async () => {
-    try {
-      const res = await api.get("/cart");
-      setCart(res.data);
-    } catch {
-      setCart([]);
+  const addToCart = (product) => {
+    const existing = cart.find(
+      (item) => item.product_id === product.id
+    );
+
+    if (existing) {
+      updateQuantity(existing.id, existing.quantity + 1);
+    } else {
+      setCart([
+        ...cart,
+        {
+          id: Date.now(),
+          product_id: product.id,
+          title: product.title,
+          price: product.price,
+          image_url: product.image_url,
+          quantity: 1,
+        },
+      ]);
     }
   };
 
-  useEffect(() => {
-    fetchCart();
-  }, []);
+  const updateQuantity = (id, quantity) => {
+    if (quantity <= 0) {
+      removeItem(id);
+      return;
+    }
 
-  // Add item
-  const addToCart = async (productId) => {
-    await api.post("/cart", { productId, quantity: 1 });
-    fetchCart();
+    setCart(
+      cart.map((item) =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
   };
 
-  // Update quantity
-  const updateQuantity = async (cartItemId, quantity) => {
-    if (quantity <= 0) return;
-    await api.patch(`/cart/${cartItemId}`, { quantity });
-    fetchCart();
+  const removeItem = (id) => {
+    setCart(cart.filter((item) => item.id !== id));
   };
 
-  // Remove
-  const removeItem = async (cartItemId) => {
-    await api.delete(`/cart/${cartItemId}`);
-    fetchCart();
-  };
-
-  const totalItems = cart.reduce(
-    (sum, item) => sum + item.quantity,
-    0
+  const totalItems = useMemo(
+    () => cart.reduce((sum, item) => sum + item.quantity, 0),
+    [cart]
   );
 
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
+  const totalPrice = useMemo(
+    () =>
+      cart.reduce(
+        (sum, item) => sum + item.quantity * item.price,
+        0
+      ),
+    [cart]
   );
 
   return (
     <CartContext.Provider
       value={{
         cart,
-        totalItems,
-        totalPrice,
         addToCart,
         updateQuantity,
-        removeItem
+        removeItem,
+        totalItems,
+        totalPrice,
       }}
     >
       {children}
     </CartContext.Provider>
   );
-};
+}
+
+export const useCart = () => useContext(CartContext);

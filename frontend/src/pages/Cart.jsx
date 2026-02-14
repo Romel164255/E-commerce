@@ -1,46 +1,24 @@
-import { useEffect, useState } from "react";
+import { useCart } from "../context/CartContext";
+import QuantitySelector from "../components/QuantitySelector";
 import api from "../api/axios";
 
 export default function Cart() {
-  const [cart, setCart] = useState([]);
-
-  useEffect(() => {
-    api.get("/cart")
-      .then(res => {
-        setCart(res.data.data || res.data);
-      })
-      .catch(err => console.error(err));
-  }, []);
+  const {
+    cart,
+    totalItems,
+    totalPrice,
+    updateQuantity,
+    removeItem,
+  } = useCart();
 
   const checkout = async () => {
     try {
       await api.post("/orders/checkout");
       alert("Order placed!");
-      setCart([]); // clear frontend after checkout
     } catch {
       alert("Checkout failed");
     }
   };
-
-  const removeItem = async (id) => {
-    try {
-      await api.delete(`/cart/${id}`);
-      setCart(cart.filter(item => item.id !== id));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  /* ===== Calculations ===== */
-  const totalItems = cart.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
-
-  const total = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
 
   return (
     <div className="cart-container">
@@ -49,7 +27,7 @@ export default function Cart() {
       {cart.length > 0 && (
         <div className="cart-total">
           <h3>
-            Subtotal ({totalItems} {totalItems === 1 ? "item" : "items"}): ₹{total}
+            Subtotal ({totalItems} items): ₹{totalPrice}
           </h3>
 
           <button className="primary-btn" onClick={checkout}>
@@ -58,9 +36,8 @@ export default function Cart() {
         </div>
       )}
 
-      {cart.map(item => (
+      {cart.map((item) => (
         <div key={item.id} className="cart-item">
-
           <img
             src={`http://localhost:5000/uploads/${item.image_url}`}
             alt={item.title}
@@ -70,7 +47,16 @@ export default function Cart() {
           <div className="cart-info">
             <h4>{item.title}</h4>
             <p>₹{item.price}</p>
-            <p>Qty: {item.quantity}</p>
+
+            <QuantitySelector
+              quantity={item.quantity}
+              onDecrease={() =>
+                updateQuantity(item.id, item.quantity - 1)
+              }
+              onIncrease={() =>
+                updateQuantity(item.id, item.quantity + 1)
+              }
+            />
 
             <button
               className="danger-btn"
@@ -79,10 +65,8 @@ export default function Cart() {
               Remove
             </button>
           </div>
-
         </div>
       ))}
-
     </div>
   );
 }
