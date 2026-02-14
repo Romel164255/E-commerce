@@ -1,5 +1,6 @@
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useCart } from "./context/CartContext";
 
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
@@ -12,6 +13,7 @@ import "./App.css";
 
 function App() {
   const navigate = useNavigate();
+  const { totalItems } = useCart();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState("");
@@ -38,28 +40,22 @@ function App() {
   return (
     <div className="app-container">
 
-      {/* ================= HEADER BAR ================= */}
+      {/* ================= HEADER ================= */}
       <header className="top-header">
-        <h1 className="logo">Outfito .</h1>
+        <h1 className="logo">Outfito.</h1>
 
-        <div className="user-section">
+        <div className="header-right">
           {isLoggedIn ? (
             <>
-              <span className="user-email">
-                👤 {userEmail}
-              </span>
+              <span className="user-email">👤 {userEmail}</span>
               <button className="logout-btn" onClick={logout}>
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link className="auth-link" to="/login">
-                Login
-              </Link>
-              <Link className="auth-link" to="/register">
-                Register
-              </Link>
+              <Link className="auth-link" to="/login">Login</Link>
+              <Link className="auth-link" to="/register">Register</Link>
             </>
           )}
         </div>
@@ -67,10 +63,25 @@ function App() {
 
       {/* ================= NAVBAR ================= */}
       <nav className="navbar">
-        <Link className="nav-link" to="/">Products</Link>
-        <Link className="nav-link" to="/cart">Cart</Link>
-        <Link className="nav-link" to="/orders">Orders</Link>
-        <Link className="nav-link" to="/admin">Admin</Link>
+        <div className="nav-left">
+          <Link className="nav-link" to="/">Products</Link>
+          <Link className="nav-link" to="/orders">Orders</Link>
+          <Link className="nav-link" to="/admin">Admin</Link>
+        </div>
+
+        {/* Cart Icon on Far Right */}
+        <div className="nav-right">
+          <Link to="/cart" className="cart-icon-wrapper">
+            <img
+              src="/shopping-cart.png"   /* image inside public folder */
+              alt="Cart"
+              className="cart-icon"
+            />
+            {totalItems > 0 && (
+              <span className="cart-badge">{totalItems}</span>
+            )}
+          </Link>
+        </div>
       </nav>
 
       {/* ================= ROUTES ================= */}
@@ -84,6 +95,7 @@ function App() {
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>
+
     </div>
   );
 }

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import api from "../api/axios";
+import { useCart } from "../context/CartContext";
 
 export default function Products() {
 
   const [searchParams, setSearchParams] = useSearchParams();
-
   const initialPage = parseInt(searchParams.get("page")) || 1;
 
   const [products, setProducts] = useState([]);
@@ -20,11 +20,11 @@ export default function Products() {
   const [gender, setGender] = useState(searchParams.get("gender") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
 
+  const { cart, addToCart, updateQuantity } = useCart();
+
   const limit = 14;
 
-  /* ===============================
-     Sync state to URL
-  =============================== */
+  /* Sync URL */
   useEffect(() => {
     setSearchParams({
       page,
@@ -34,16 +34,11 @@ export default function Products() {
     });
   }, [page, sort, gender, category]);
 
-  /* ===============================
-     Fetch Products
-  =============================== */
+  /* Fetch Products */
   useEffect(() => {
-
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        setError("");
-
         const params = new URLSearchParams({
           page,
           ...(sort && { sort }),
@@ -65,33 +60,14 @@ export default function Products() {
     };
 
     fetchProducts();
-
   }, [page, sort, gender, category]);
 
-  /* ===============================
-     Add To Cart
-  =============================== */
-  const addToCart = async (id) => {
-    try {
-      await api.post("/cart", { productId: id, quantity: 1 });
-      alert("Added to cart");
-    } catch {
-      alert("Login required");
-    }
-  };
-
-  /* ===============================
-     Showing range
-  =============================== */
   const start = totalProducts === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(page * limit, totalProducts);
 
-  /* ===============================
-     Smart Pagination Window
-  =============================== */
   const getPageNumbers = () => {
     const pages = [];
-    const windowSize = 2; // show 2 before & after current
+    const windowSize = 2;
 
     const startPage = Math.max(1, page - windowSize);
     const endPage = Math.min(totalPages, page + windowSize);
@@ -108,7 +84,6 @@ export default function Products() {
 
       <h2 className="page-title">Products</h2>
 
-      {/* ===== Filters ===== */}
       <div className="filter-bar">
         <select value={sort} onChange={(e) => { setPage(1); setSort(e.target.value); }}>
           <option value="">Sort</option>
@@ -131,7 +106,6 @@ export default function Products() {
         </select>
       </div>
 
-      {/* ===== Count ===== */}
       {totalProducts > 0 && (
         <p className="product-count">
           Showing {start}–{end} of {totalProducts} products
@@ -141,41 +115,63 @@ export default function Products() {
       {loading && <p>Loading...</p>}
       {error && <p className="error-text">{error}</p>}
 
-      {/* ===== Grid ===== */}
       <div className="product-grid">
-        {products.map((p) => (
-          <div key={p.id} className="product-card">
-            <img
-              src={`http://localhost:5000/uploads/${p.image_url}`}
-              alt={p.title}
-              className="product-image"
-            />
-            <h4>{p.title}</h4>
-            <p>₹{p.price}</p>
-            <button className="Add-btn" onClick={() => addToCart(p.id)}>
-              Add to Cart
-            </button>
-          </div>
-        ))}
+        {products.map((p) => {
+
+          const cartItem = cart.find(item => item.product_id === p.id);
+
+          return (
+            <div key={p.id} className="product-card">
+
+              <img
+                src={`http://localhost:5000/uploads/${p.image_url}`}
+                alt={p.title}
+                className="product-image"
+              />
+
+              <h4>{p.title}</h4>
+              <p className="product-price">₹{p.price}</p>
+
+              {cartItem ? (
+                <div className="quantity-controls">
+                  <button
+                    onClick={() =>
+                      updateQuantity(cartItem.id, cartItem.quantity - 1)
+                    }
+                  >
+                    -
+                  </button>
+
+                  <span>{cartItem.quantity}</span>
+
+                  <button
+                    onClick={() =>
+                      updateQuantity(cartItem.id, cartItem.quantity + 1)
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+              ) : (
+                <button
+                  className="primary-btn"
+                  onClick={() => addToCart(p.id)}
+                >
+                  Add to Cart
+                </button>
+              )}
+
+            </div>
+          );
+        })}
       </div>
 
-      {/* ===== Pagination ===== */}
       {totalPages > 1 && (
         <div className="pagination">
 
-          <button
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-          >
+          <button disabled={page === 1} onClick={() => setPage(page - 1)}>
             Prev
           </button>
-
-          {page > 3 && (
-            <>
-              <button onClick={() => setPage(1)}>1</button>
-              {page > 4 && <span>...</span>}
-            </>
-          )}
 
           {getPageNumbers().map((num) => (
             <button
@@ -187,24 +183,13 @@ export default function Products() {
             </button>
           ))}
 
-          {page < totalPages - 2 && (
-            <>
-              {page < totalPages - 3 && <span>...</span>}
-              <button onClick={() => setPage(totalPages)}>
-                {totalPages}
-              </button>
-            </>
-          )}
-
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage(page + 1)}
-          >
+          <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
             Next
           </button>
 
         </div>
       )}
+
     </div>
   );
 }
