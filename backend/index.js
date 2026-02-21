@@ -10,6 +10,9 @@ import userRoutes from "./routes/users.js";
 import productRoutes from "./routes/products.js";
 import cartRoutes from "./routes/cart.js";
 import orderRoutes from "./routes/order.js";
+import addressRoutes from "./routes/address.js";
+import searchRoutes from "./routes/search.js";
+
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -42,6 +45,8 @@ app.use("/users", userRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
+app.use("/addresses", addressRoutes);
+app.use("/search", searchRoutes);
 
 
 
@@ -61,5 +66,11 @@ app.listen(PORT, async () => {
     console.error("❌ Database Connection Failed:", err.message);
   }
 
+
+  const dbName = await pool.query("SELECT current_database()");
+console.log("Connected DB:", dbName.rows[0]);
+
+  const userName = await pool.query("SELECT current_user");
+  console.log("Connected User:", userName.rows[0]);
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

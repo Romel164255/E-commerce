@@ -1,6 +1,6 @@
 import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 import QuantitySelector from "../components/QuantitySelector";
-import api from "../api/axios";
 
 export default function Cart() {
   const {
@@ -11,60 +11,61 @@ export default function Cart() {
     removeItem,
   } = useCart();
 
-  const checkout = async () => {
-    try {
-      await api.post("/orders/checkout");
-      alert("Order placed!");
-    } catch {
-      alert("Checkout failed");
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  const handleProceed = (e) => {
+    e.preventDefault();   // prevent form submit
+    e.stopPropagation();  // extra safety
+
+    if (!token) {
+      navigate("/login");
+      return;
     }
+
+    navigate("/checkout/address");
   };
 
   return (
     <div className="cart-container">
-      <h2 className="page-title">Cart</h2>
+      <h2>Cart</h2>
 
       {cart.length > 0 && (
-        <div className="cart-total">
+        <div>
           <h3>
             Subtotal ({totalItems} items): ₹{totalPrice}
           </h3>
 
-          <button className="primary-btn" onClick={checkout}>
+          <button
+            type="button"
+            onClick={handleProceed}
+          >
             Proceed to Buy
           </button>
         </div>
       )}
 
       {cart.map((item) => (
-        <div key={item.id} className="cart-item">
-          <img
-            src={`http://localhost:5000/uploads/${item.image_url}`}
-            alt={item.title}
-            className="cart-image"
+        <div key={item.id}>
+          <h4>{item.title}</h4>
+          <p>₹{item.price}</p>
+
+          <QuantitySelector
+            quantity={item.quantity}
+            onDecrease={() =>
+              updateQuantity(item.id, item.quantity - 1)
+            }
+            onIncrease={() =>
+              updateQuantity(item.id, item.quantity + 1)
+            }
           />
 
-          <div className="cart-info">
-            <h4>{item.title}</h4>
-            <p>₹{item.price}</p>
-
-            <QuantitySelector
-              quantity={item.quantity}
-              onDecrease={() =>
-                updateQuantity(item.id, item.quantity - 1)
-              }
-              onIncrease={() =>
-                updateQuantity(item.id, item.quantity + 1)
-              }
-            />
-
-            <button
-              className="danger-btn"
-              onClick={() => removeItem(item.id)}
-            >
-              Remove
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => removeItem(item.id)}
+          >
+            Remove
+          </button>
         </div>
       ))}
     </div>
