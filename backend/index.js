@@ -12,6 +12,7 @@ import cartRoutes from "./routes/cart.js";
 import orderRoutes from "./routes/order.js";
 import addressRoutes from "./routes/address.js";
 import searchRoutes from "./routes/search.js";
+import paymentRoutes from "./routes/payment.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -20,26 +21,18 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-/* -----------------------------
-   Resolve __dirname in ES Modules
------------------------------- */
+/* Resolve __dirname in ES Modules */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-/* -----------------------------
-   Global Middlewares
------------------------------- */
+/* Global Middlewares */
 app.use(cors());
 app.use(express.json());
 
-/* -----------------------------
-   Static File Serving (Images)
------------------------------- */
+/* Static Files */
 app.use("/uploads", express.static("uploads"));
 
-/* -----------------------------
-   API Routes
------------------------------- */
+/* API Routes */
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/products", productRoutes);
@@ -47,17 +40,12 @@ app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/addresses", addressRoutes);
 app.use("/search", searchRoutes);
+app.use("/api/payment", paymentRoutes);   // ✅ Added
 
-
-
-/* -----------------------------
-   Error Middleware (ALWAYS LAST)
------------------------------- */
+/* Error Handler */
 app.use(errorHandler);
 
-/* -----------------------------
-   Start Server + DB Check
------------------------------- */
+/* Start Server */
 app.listen(PORT, async () => {
   try {
     await pool.query("SELECT 1");
@@ -66,11 +54,5 @@ app.listen(PORT, async () => {
     console.error("❌ Database Connection Failed:", err.message);
   }
 
-
-  const dbName = await pool.query("SELECT current_database()");
-console.log("Connected DB:", dbName.rows[0]);
-
-  const userName = await pool.query("SELECT current_user");
-  console.log("Connected User:", userName.rows[0]);
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

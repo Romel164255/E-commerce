@@ -1,4 +1,10 @@
 import { pool } from "../db.js";
+import Razorpay from "razorpay";
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 
 /* ===============================
    STATE MACHINE
@@ -17,23 +23,22 @@ const validTransitions = {
 =============================== */
 
 export const createOrder = async (userId, addressId) => {
-
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
-    // 1️⃣ Validate address
+    // Validate address
     const addressCheck = await client.query(
-      "SELECT * FROM addresses WHERE id = $1 AND user_id = $2",
+      "SELECT id FROM addresses WHERE id = $1 AND user_id = $2",
       [addressId, userId]
     );
 
-    if (addressCheck.rows.length === 0) {
+    if (!addressCheck.rows.length) {
       throw new Error("Invalid address");
     }
 
-    // 2️⃣ Get cart items
+    // Get cart items
     const cartResult = await client.query(
       `
       SELECT c.product_id, c.quantity, p.price
@@ -44,18 +49,18 @@ export const createOrder = async (userId, addressId) => {
       [userId]
     );
 
-    if (cartResult.rows.length === 0) {
+    if (!cartResult.rows.length) {
       throw new Error("Cart is empty");
     }
 
-    // 3️⃣ Calculate total
-    let total = 0;
-    for (const item of cartResult.rows) {
-      total += item.quantity * item.price;
-    }
+    // Calculate total
+    const total = cartResult.rows.reduce(
+      (sum, item) => sum + item.quantity * item.price,
+      0
+    );
 
-    // 4️⃣ Insert order
-    const orderResult = await client.query(
+    // Insert order
+    const orderInsert = await client.query(
       `
       INSERT INTO orders (user_id, total, status, address_id)
       VALUES ($1, $2, 'PENDING', $3)
@@ -64,9 +69,9 @@ export const createOrder = async (userId, addressId) => {
       [userId, total, addressId]
     );
 
-    const orderId = orderResult.rows[0].id;
+    const orderId = orderInsert.rows[0].id;
 
-    // 5️⃣ Insert order items
+    // Insert order items
     for (const item of cartResult.rows) {
       await client.query(
         `
@@ -94,7 +99,7 @@ export const createOrder = async (userId, addressId) => {
 
 
 /* ===============================
-   PAY ORDER
+   PAY ORDER (CREATE RAZORPAY ORDER)
 =============================== */
 
 export const payOrder = async (userId, orderId) => {
@@ -104,32 +109,38 @@ export const payOrder = async (userId, orderId) => {
     [orderId, userId]
   );
 
-  if (orderCheck.rows.length === 0) {
+  if (!orderCheck.rows.length) {
     throw new Error("Order not found");
   }
 
-  if (orderCheck.rows[0].status !== "PENDING") {
+  const order = orderCheck.rows[0];
+
+  if (order.status !== "PENDING") {
     throw new Error("Order already processed");
   }
 
-  // Simulated payment success
-  const paymentSuccess = true;
+  // Create Razorpay order
+  const razorpayOrder = await razorpay.orders.create({
+    amount: Number(order.total) * 100,
+    currency: "INR",
+    receipt: `order_${orderId}`
+  });
 
-  if (!paymentSuccess) {
-    throw new Error("Payment failed");
-  }
-
+  // Save razorpay_order_id
   await pool.query(
-    "UPDATE orders SET status = 'PAID' WHERE id = $1",
-    [orderId]
+    `
+    UPDATE orders
+    SET razorpay_order_id = $1
+    WHERE id = $2
+    `,
+    [razorpayOrder.id, orderId]
   );
 
-  await pool.query(
-    "DELETE FROM cart_items WHERE user_id = $1",
-    [userId]
-  );
-
-  return { message: "Payment successful" };
+  return {
+    razorpayOrderId: razorpayOrder.id,
+    amount: razorpayOrder.amount,
+    key: process.env.RAZORPAY_KEY_ID
+  };
 };
 
 
@@ -141,7 +152,7 @@ export const getUserOrders = async (userId) => {
 
   const result = await pool.query(
     `
-    SELECT id, total, status, created_at
+    SELECT id, total, status, payment_status, created_at
     FROM orders
     WHERE user_id = $1
     ORDER BY created_at DESC

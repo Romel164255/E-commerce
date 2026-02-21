@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 
@@ -6,14 +7,44 @@ export default function CheckoutPayment() {
   const navigate = useNavigate();
   const orderId = params.get("orderId");
 
-  const handlePayment = async () => {
-    try {
-      await api.post(`/orders/${orderId}/pay`);
-      navigate("/orders");
-    } catch (err) {
-      alert(err.response?.data?.error || "Payment failed");
-    }
-  };
+  useEffect(() => {
+    if (!orderId) return;
+
+    const startPayment = async () => {
+      try {
+        // 1️⃣ Create Razorpay order
+        const { data } = await api.post(`/orders/${orderId}/pay`);
+
+        const options = {
+          key: data.key,
+          amount: data.amount,
+          currency: "INR",
+          order_id: data.razorpayOrderId,
+          name: "Romel Store",
+          description: "Order Payment",
+
+          handler: async function (response) {
+            await api.post("/api/payment/verify", response);
+            alert("Payment Successful");
+            navigate("/orders");
+          },
+
+          theme: {
+            color: "#000000"
+          }
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+
+      } catch (err) {
+        alert(err.response?.data?.error || "Payment failed");
+      }
+    };
+
+    startPayment();
+
+  }, [orderId, navigate]);
 
   if (!orderId) {
     return <p>Invalid Order</p>;
@@ -21,16 +52,7 @@ export default function CheckoutPayment() {
 
   return (
     <div>
-      <h2>Payment</h2>
-
-      <p>Order ID: {orderId}</p>
-
-      <button
-        type="button"
-        onClick={handlePayment}
-      >
-        Pay Now
-      </button>
+      <h2>Redirecting to Payment...</h2>
     </div>
   );
 }
