@@ -374,3 +374,342 @@ body {
   text-align: center;
   font-weight: 600;
 }
+
+/* ===================================
+   ORDERS SECTION
+=================================== */
+.orders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.orders-container h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* ===================================
+   ORDER CARD
+=================================== */
+.order-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  transition: 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* ===================================
+   ORDER ROWS
+=================================== */
+.order-card p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.order-card strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* ===================================
+   STATUS BADGES
+=================================== */
+.order-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+/* Status Colors */
+.status-PENDING {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-PAID {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-SHIPPED {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.status-DELIVERED {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.status-CANCELLED {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ===================================
+   CONTINUE PAYMENT BUTTON
+=================================== */
+.order-card button {
+  margin-top: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  width: fit-content;
+  transition: 0.2s ease;
+}
+
+.order-card button:hover {
+  background: var(--primary-dark);
+}
+
+
+/* ===================================
+   ORDERS SECTION
+=================================== */
+.orders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.orders-title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.empty-orders {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ===================================
+   ORDER CARD
+=================================== */
+.order-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  transition: 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+}
+
+/* ===================================
+   ORDER HEADER
+=================================== */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-id {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ===================================
+   STATUS BADGE
+=================================== */
+.order-status {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* 🟡 Yellow PENDING */
+.status-PENDING {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* 🟢 Green PAID */
+.status-PAID {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* 🔵 Blue SHIPPED */
+.status-SHIPPED {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+/* 🟣 Purple DELIVERED */
+.status-DELIVERED {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+/* 🔴 Red CANCELLED */
+.status-CANCELLED {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ===================================
+   ORDER BODY
+=================================== */
+.order-body p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.label {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* ===================================
+   CONTINUE PAYMENT BUTTON
+=================================== */
+.continue-btn {
+  width: fit-content;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.continue-btn:hover {
+  background: var(--primary-dark);
+}
+/* ===================================
+   TABLET RESPONSIVE (<= 1024px)
+=================================== */
+@media (max-width: 1024px) {
+
+  .main-content {
+    padding: 30px;
+  }
+
+  .home-layout {
+    grid-template-columns: 1fr; /* stack sidebar below */
+  }
+
+  .right-sidebar {
+    margin-top: 20px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+}
+
+/* ===================================
+   MOBILE RESPONSIVE (<= 768px)
+=================================== */
+@media (max-width: 768px) {
+
+  /* Header */
+  .header {
+    padding: 0 20px;
+    height: 60px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .header-right {
+    gap: 15px;
+  }
+
+  /* Layout padding */
+  .main-content {
+    padding: 20px;
+  }
+
+  /* Filters stack */
+  .filter-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Products full width */
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Cart items stack vertically */
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cart-image {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Order cards */
+  .order-card {
+    padding: 16px;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+}
+
+
+/* ===================================
+   SMALL MOBILE (<= 480px)
+=================================== */
+@media (max-width: 480px) {
+
+  .main-content {
+    padding: 15px;
+  }
+
+  .product-card {
+    padding: 14px;
+  }
+
+  .primary-btn {
+    font-size: 14px;
+  }
+
+  .order-card {
+    padding: 14px;
+  }
+
+}
