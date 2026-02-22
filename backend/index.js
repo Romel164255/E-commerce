@@ -48,7 +48,7 @@ app.use(
 app.use(express.json());
 
 /* ===============================
-   ROUTES
+   API ROUTES
 =============================== */
 
 app.use("/auth", authRoutes);
@@ -61,13 +61,13 @@ app.use("/search", searchRoutes);
 app.use("/api/payment", paymentRoutes);
 
 /* ===============================
-   ERROR HANDLER (ALWAYS LAST)
+   ERROR HANDLER
 =============================== */
 
 app.use(errorHandler);
 
 /* ===============================
-   SERVER START
+   START SERVER
 =============================== */
 
 app.listen(PORT, async () => {

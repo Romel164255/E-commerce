@@ -127,9 +127,9 @@ export default function Products() {
           return (
             <div key={p.id} className="product-card">
               <img
-                src={`http://localhost:5000/uploads/${p.image_url}`}
-                alt={p.title}
-                className="product-image"
+                  src={p.image_url}
+                  alt={p.title}
+                  className="product-image"
               />
 
               <h4>{p.title}</h4>

@@ -1,7 +1,7 @@
 import { pool } from "../db.js";
 
 /* ===================================
-   GET PRODUCTS (FILTER + SORT + PAGINATION)
+   GET PRODUCTS (UNCHANGED)
 =================================== */
 
 export const getProducts = async ({
@@ -9,7 +9,7 @@ export const getProducts = async ({
   limit = 14,
   sort = "new",
   category,
-  gender
+  gender,
 }) => {
 
   const offset = (page - 1) * limit;
@@ -32,13 +32,11 @@ export const getProducts = async ({
     ? "WHERE " + whereClauses.join(" AND ")
     : "";
 
-  /* ---------- TOTAL COUNT ---------- */
   const countQuery = `SELECT COUNT(*) FROM products ${whereSQL}`;
   const countResult = await pool.query(countQuery, values);
   const total = parseInt(countResult.rows[0].count);
   const totalPages = Math.ceil(total / limit);
 
-  /* ---------- MAIN QUERY ---------- */
   let query = `
     SELECT id, title, price, image_url, category, gender
     FROM products
@@ -63,29 +61,29 @@ export const getProducts = async ({
     total,
     totalPages,
     limit,
-    data: result.rows
+    data: result.rows,
   };
 };
 
-
 /* ===================================
-   CREATE PRODUCT
+   CREATE PRODUCT (UPDATED FOR IMAGE)
 =================================== */
 
 export const createProduct = async ({
   title,
   description,
   price,
-  stock
+  stock,
+  image_url,
 }) => {
 
   const result = await pool.query(
     `
-    INSERT INTO products (title, description, price, stock)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO products (title, description, price, stock, image_url)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *
     `,
-    [title, description, price, stock]
+    [title, description, price, stock, image_url]
   );
 
   return result.rows[0];
