@@ -11,6 +11,9 @@ import orderRoutes from "./routes/order.js";
 import addressRoutes from "./routes/address.js";
 import searchRoutes from "./routes/search.js";
 import paymentRoutes from "./routes/payment.js";
+import adminRoutes from "./routes/admin.js";
+
+app.use("/admin", adminRoutes);
 
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -66,6 +69,7 @@ app.use("/orders", orderRoutes);
 app.use("/addresses", addressRoutes);
 app.use("/search", searchRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/admin", adminRoutes);
 
 /* ===============================
    ERROR HANDLER

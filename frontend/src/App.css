@@ -873,3 +873,91 @@ body {
   }
 
 }
+
+
+.admin-link {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #1e40af;
+  transition: 0.2s ease;
+}
+
+.admin-link:hover {
+  background: #2563eb;
+}
+
+
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  width: 220px;
+  background: #111827;
+  color: white;
+  padding: 30px 20px;
+}
+
+.admin-title {
+  margin-bottom: 30px;
+  font-size: 20px;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-nav a {
+  color: #d1d5db;
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 6px;
+  transition: 0.2s ease;
+}
+
+.admin-nav a:hover {
+  background: #1f2937;
+  color: white;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 40px;
+  background: #f9fafb;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  text-align: left;
+}
+
+.admin-table th {
+  background: #f3f4f6;
+}
+
+.admin-dashboard {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  flex: 1;
+}

@@ -2,12 +2,14 @@ import { Outlet, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useState } from "react";
 
-
 export default function Layout() {
   const { totalItems } = useCart();
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
   const email = localStorage.getItem("email");
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const logout = () => {
@@ -23,19 +25,32 @@ export default function Layout() {
 
       {/* ================= HEADER ================= */}
       <header className="header">
-        <Link to="/" className="logo">Outfito.</Link>
+        <Link to="/" className="logo">
+          Outfito.
+        </Link>
 
         <div className="header-right">
+
+          {/* 🛒 Cart */}
           <Link to="/cart" className="cart-link">
             Cart ({totalItems})
           </Link>
 
+          {/* 👑 Admin Link (Visible Only To Admin) */}
+          {token && role === "admin" && (
+            <Link to="/admin" className="admin-link">
+              Admin
+            </Link>
+          )}
+
+          {/* 👤 Account Dropdown */}
           <div
             className="account"
             onMouseEnter={() => setMenuOpen(true)}
             onMouseLeave={() => setMenuOpen(false)}
           >
             👤 Account
+
             {menuOpen && (
               <div className="dropdown">
                 {token ? (
@@ -52,6 +67,7 @@ export default function Layout() {
               </div>
             )}
           </div>
+
         </div>
       </header>
 
@@ -64,6 +80,7 @@ export default function Layout() {
       <footer className="footer">
         <p>© {new Date().getFullYear()} Outfito. All rights reserved.</p>
       </footer>
+
     </div>
   );
 }

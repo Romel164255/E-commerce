@@ -6,9 +6,14 @@ import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Admin from "./pages/Admin";
 import CheckoutAddress from "./pages/CheckoutAddress";
 import CheckoutPayment from "./pages/CheckoutPayment";
+import AdminLayout from "./pages/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
+import ProductsAdmin from "./pages/admin/ProductsAdmin";
+import UsersAdmin from "./pages/admin/UsersAdmin";
+import OrdersAdmin from "./pages/admin/OrdersAdmin";
+import Analytics from "./pages/admin/Analytics";
 
 import "./App.css";
 
@@ -17,16 +22,25 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
 
-        <Route index element={<Products />} />
-        <Route path="cart" element={<Cart />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route path="admin" element={<Admin />} />
-        <Route path="checkout/address" element={<CheckoutAddress />} />
-        <Route path="checkout/payment" element={<CheckoutPayment />} />
+         <Route index element={<Products />} />
+         <Route path="cart" element={<Cart />} />
+         <Route path="orders" element={<Orders />} />
+         <Route path="register" element={<Register />} />
+         <Route path="login" element={<Login/>} />
+         <Route path="checkout/address" element={<CheckoutAddress />} />
+         <Route path="checkout/payment" element={<CheckoutPayment />} />
 
-      </Route>
+  {/* ADMIN ROUTES */}
+         <Route path="admin" element={<AdminLayout />}>
+         <Route index element={<Dashboard />} />
+         <Route path="dashboard" element={<Dashboard />} />
+         <Route path="products" element={<ProductsAdmin />} />
+         <Route path="users" element={<UsersAdmin />} />
+         <Route path="orders" element={<OrdersAdmin />} />
+         <Route path="analytics" element={<Analytics />} />
+  </Route>
+
+</Route>
     </Routes>
   );
 }
