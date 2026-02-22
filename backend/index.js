@@ -12,8 +12,6 @@ import searchRoutes from "./routes/search.js";
 import paymentRoutes from "./routes/payment.js";
 import adminRoutes from "./routes/admin.js";
 
-app.use("/admin", adminRoutes);
-
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -35,12 +33,10 @@ app.use(
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
 
-      // Allow exact match
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // Allow Vercel preview deployments
       if (origin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
@@ -50,6 +46,7 @@ app.use(
     credentials: true,
   })
 );
+
 /* ===============================
    GLOBAL MIDDLEWARES
 =============================== */
@@ -67,7 +64,7 @@ app.use("/orders", orderRoutes);
 app.use("/addresses", addressRoutes);
 app.use("/search", searchRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use("/admin", adminRoutes);
+app.use("/admin", adminRoutes); // ✅ only here
 
 /* ===============================
    ERROR HANDLER
