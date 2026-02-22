@@ -713,3 +713,163 @@ body {
   }
 
 }
+/* ===================================
+   AUTH PAGES (Login & Register)
+=================================== */
+
+/* Wrapper */
+.login-container,
+.auth-container {
+  min-height: calc(100vh - 140px); /* header + footer space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card */
+.login-container,
+.auth-container {
+  background: transparent;
+}
+
+.login-container > *,
+.auth-container > * {
+  width: 100%;
+}
+
+/* Auth Card */
+.login-container,
+.auth-container {
+  display: flex;
+  justify-content: center;
+}
+
+.login-container form,
+.auth-container form {
+  width: 100%;
+}
+
+/* Actual Card Box */
+.login-container,
+.auth-container {
+  padding: 40px 20px;
+}
+
+.login-container::before,
+.auth-container::before {
+  content: "";
+}
+
+.login-container > h2,
+.auth-container > h2 {
+  text-align: center;
+}
+
+/* Create actual card wrapper */
+.login-container,
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-container,
+.auth-container {
+  max-width: 100%;
+}
+
+/* Target inner structure */
+.login-container,
+.auth-container {
+  display: flex;
+}
+
+.login-container,
+.auth-container {
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Card Design */
+.login-container,
+.auth-container {
+  background: transparent;
+}
+
+/* Better Card Layout */
+.login-container,
+.auth-container {
+  padding: 60px 20px;
+}
+
+.login-container h2,
+.auth-container h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+/* Create Card Box */
+.login-container,
+.auth-container {
+  max-width: 400px;
+  margin: auto;
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 35px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+  border: 1px solid var(--border);
+}
+
+/* Inputs */
+.login-container input,
+.auth-container input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+.login-container input:focus,
+.auth-container input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Buttons */
+.login-container button,
+.auth-container button {
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.login-container button:hover,
+.auth-container button:hover {
+  background: var(--primary-dark);
+}
+
+/* Small screen adjustment */
+@media (max-width: 480px) {
+
+  .login-container,
+  .auth-container {
+    padding: 25px;
+  }
+
+  .login-container,
+  .auth-container {
+    width: 95%;
+  }
+
+}
