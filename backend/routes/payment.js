@@ -5,7 +5,7 @@ import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/verify", authenticateToken, async (req, res) => {
+router.post("/verify", async (req, res) => {
 
   const {
     razorpay_order_id,

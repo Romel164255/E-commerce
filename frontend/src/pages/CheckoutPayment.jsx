@@ -12,7 +12,6 @@ export default function CheckoutPayment() {
 
     const startPayment = async () => {
       try {
-        // 1️⃣ Create Razorpay order
         const { data } = await api.post(`/orders/${orderId}/pay`);
 
         const options = {
@@ -25,8 +24,15 @@ export default function CheckoutPayment() {
 
           handler: async function (response) {
             await api.post("/api/payment/verify", response);
+
             alert("Payment Successful");
             navigate("/orders");
+          },
+
+          prefill: {
+            name: "",
+            email: "",
+            contact: ""
           },
 
           theme: {
@@ -50,9 +56,5 @@ export default function CheckoutPayment() {
     return <p>Invalid Order</p>;
   }
 
-  return (
-    <div>
-      <h2>Redirecting to Payment...</h2>
-    </div>
-  );
+  return <h2>Redirecting to Payment...</h2>;
 }
