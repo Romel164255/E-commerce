@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 import { useCart } from "../context/CartContext";
 import QuantitySelector from "../components/QuantitySelector";
+import Orders from "./Orders";
 
 /* ===============================
    CLOUDINARY CONFIG
@@ -63,7 +64,7 @@ export default function Products() {
         setProducts(res.data.data);
         setTotalPages(res.data.totalPages);
         setTotalProducts(res.data.total);
-      } catch (err) {
+      } catch {
         setError("Failed to load products");
       } finally {
         setLoading(false);
@@ -91,129 +92,144 @@ export default function Products() {
   };
 
   return (
-    <div className="products-container">
-      <h2 className="page-title">Products</h2>
+    <div className="home-layout">
 
-      {/* Filters */}
-      <div className="filter-bar">
-        <select
-          value={sort}
-          onChange={(e) => {
-            setPage(1);
-            setSort(e.target.value);
-          }}
-        >
-          <option value="">Sort</option>
-          <option value="price_asc">Price: Low → High</option>
-          <option value="price_desc">Price: High → Low</option>
-        </select>
+      {/* LEFT SIDE — PRODUCTS */}
+      <div className="left-content">
 
-        <select
-          value={gender}
-          onChange={(e) => {
-            setPage(1);
-            setGender(e.target.value);
-          }}
-        >
-          <option value="">All Genders</option>
-          <option value="Men">Men</option>
-          <option value="Women">Women</option>
-          <option value="Boys">Boys</option>
-          <option value="Girls">Girls</option>
-        </select>
+        <div className="products-container">
+          <h2 className="page-title">Products</h2>
 
-        <select
-          value={category}
-          onChange={(e) => {
-            setPage(1);
-            setCategory(e.target.value);
-          }}
-        >
-          <option value="">All Categories</option>
-          <option value="Apparel">Apparel</option>
-          <option value="Footwear">Footwear</option>
-        </select>
-      </div>
-
-      {/* Product Count */}
-      {totalProducts > 0 && (
-        <p className="product-count">
-          Showing {start}–{end} of {totalProducts} products
-        </p>
-      )}
-
-      {loading && <p>Loading...</p>}
-      {error && <p className="error-text">{error}</p>}
-
-      {/* Product Grid */}
-      <div className="product-grid">
-        {products.map((p) => {
-          const cartItem = cart.find(
-            (item) => item.product_id === p.id
-          );
-
-          return (
-            <div key={p.id} className="product-card">
-              <img
-                src={`${BASE_IMAGE_URL}${p.image_url}`}
-                alt={p.title}
-                className="product-image"
-              />
-
-              <h4>{p.title}</h4>
-              <p className="product-price">₹{p.price}</p>
-
-              {cartItem ? (
-                <QuantitySelector
-                  quantity={cartItem.quantity}
-                  onDecrease={() =>
-                    updateQuantity(cartItem.id, cartItem.quantity - 1)
-                  }
-                  onIncrease={() =>
-                    updateQuantity(cartItem.id, cartItem.quantity + 1)
-                  }
-                />
-              ) : (
-                <button
-                  className="primary-btn"
-                  onClick={() => addToCart(p)}
-                >
-                  Add to Cart
-                </button>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="pagination">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-          >
-            Prev
-          </button>
-
-          {getPageNumbers().map((num) => (
-            <button
-              key={num}
-              className={page === num ? "active-page" : ""}
-              onClick={() => setPage(num)}
+          {/* Filters */}
+          <div className="filter-bar">
+            <select
+              value={sort}
+              onChange={(e) => {
+                setPage(1);
+                setSort(e.target.value);
+              }}
             >
-              {num}
-            </button>
-          ))}
+              <option value="">Sort</option>
+              <option value="price_asc">Price: Low → High</option>
+              <option value="price_desc">Price: High → Low</option>
+            </select>
 
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage(page + 1)}
-          >
-            Next
-          </button>
+            <select
+              value={gender}
+              onChange={(e) => {
+                setPage(1);
+                setGender(e.target.value);
+              }}
+            >
+              <option value="">All Genders</option>
+              <option value="Men">Men</option>
+              <option value="Women">Women</option>
+              <option value="Boys">Boys</option>
+              <option value="Girls">Girls</option>
+            </select>
+
+            <select
+              value={category}
+              onChange={(e) => {
+                setPage(1);
+                setCategory(e.target.value);
+              }}
+            >
+              <option value="">All Categories</option>
+              <option value="Apparel">Apparel</option>
+              <option value="Footwear">Footwear</option>
+            </select>
+          </div>
+
+          {totalProducts > 0 && (
+            <p className="product-count">
+              Showing {start}–{end} of {totalProducts} products
+            </p>
+          )}
+
+          {loading && <p>Loading...</p>}
+          {error && <p className="error-text">{error}</p>}
+
+          {/* Product Grid */}
+          <div className="product-grid">
+            {products.map((p) => {
+              const cartItem = cart.find(
+                (item) => item.product_id === p.id
+              );
+
+              return (
+                <div key={p.id} className="product-card">
+                  <img
+                    src={`${BASE_IMAGE_URL}${p.image_url}`}
+                    alt={p.title}
+                    className="product-image"
+                  />
+
+                  <h4>{p.title}</h4>
+                  <p className="product-price">₹{p.price}</p>
+
+                  {cartItem ? (
+                    <QuantitySelector
+                      quantity={cartItem.quantity}
+                      onDecrease={() =>
+                        updateQuantity(cartItem.id, cartItem.quantity - 1)
+                      }
+                      onIncrease={() =>
+                        updateQuantity(cartItem.id, cartItem.quantity + 1)
+                      }
+                    />
+                  ) : (
+                    <button
+                      className="primary-btn"
+                      onClick={() => addToCart(p)}
+                    >
+                      Add to Cart
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+              >
+                Prev
+              </button>
+
+              {getPageNumbers().map((num) => (
+                <button
+                  key={num}
+                  className={page === num ? "active-page" : ""}
+                  onClick={() => setPage(num)}
+                >
+                  {num}
+                </button>
+              ))}
+
+              <button
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                Next
+              </button>
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* RIGHT SIDE — ORDERS SIDEBAR */}
+      {localStorage.getItem("token") && (
+        <div className="right-sidebar">
+          <Orders />
         </div>
       )}
+
     </div>
   );
 }
