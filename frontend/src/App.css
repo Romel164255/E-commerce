@@ -57,7 +57,7 @@ body {
 }
 
 .logo {
-  font-size: 26px;
+  font-size: 50px;
   font-weight: 800;
   text-decoration: none;
   color: white;
@@ -643,7 +643,7 @@ body {
   }
 
   .logo {
-    font-size: 50px;
+    font-size: 20px;
   }
 
   .header-right {
