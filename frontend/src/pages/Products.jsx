@@ -4,6 +4,12 @@ import api from "../api/axios";
 import { useCart } from "../context/CartContext";
 import QuantitySelector from "../components/QuantitySelector";
 
+/* ===============================
+   CLOUDINARY CONFIG
+=============================== */
+const CLOUD_NAME = "dntjt9qhl";
+const BASE_IMAGE_URL = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
+
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = parseInt(searchParams.get("page")) || 1;
@@ -24,7 +30,9 @@ export default function Products() {
 
   const limit = 14;
 
-  // Sync state to URL
+  /* ===============================
+     SYNC STATE WITH URL
+  =============================== */
   useEffect(() => {
     setSearchParams({
       page,
@@ -32,9 +40,11 @@ export default function Products() {
       ...(gender && { gender }),
       ...(category && { category })
     });
-  }, [page, sort, gender, category]);
+  }, [page, sort, gender, category, setSearchParams]);
 
-  // Fetch products
+  /* ===============================
+     FETCH PRODUCTS
+  =============================== */
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -53,7 +63,7 @@ export default function Products() {
         setProducts(res.data.data);
         setTotalPages(res.data.totalPages);
         setTotalProducts(res.data.total);
-      } catch {
+      } catch (err) {
         setError("Failed to load products");
       } finally {
         setLoading(false);
@@ -86,13 +96,25 @@ export default function Products() {
 
       {/* Filters */}
       <div className="filter-bar">
-        <select value={sort} onChange={(e) => { setPage(1); setSort(e.target.value); }}>
+        <select
+          value={sort}
+          onChange={(e) => {
+            setPage(1);
+            setSort(e.target.value);
+          }}
+        >
           <option value="">Sort</option>
           <option value="price_asc">Price: Low → High</option>
           <option value="price_desc">Price: High → Low</option>
         </select>
 
-        <select value={gender} onChange={(e) => { setPage(1); setGender(e.target.value); }}>
+        <select
+          value={gender}
+          onChange={(e) => {
+            setPage(1);
+            setGender(e.target.value);
+          }}
+        >
           <option value="">All Genders</option>
           <option value="Men">Men</option>
           <option value="Women">Women</option>
@@ -100,14 +122,20 @@ export default function Products() {
           <option value="Girls">Girls</option>
         </select>
 
-        <select value={category} onChange={(e) => { setPage(1); setCategory(e.target.value); }}>
+        <select
+          value={category}
+          onChange={(e) => {
+            setPage(1);
+            setCategory(e.target.value);
+          }}
+        >
           <option value="">All Categories</option>
           <option value="Apparel">Apparel</option>
           <option value="Footwear">Footwear</option>
         </select>
       </div>
 
-      {/* Count */}
+      {/* Product Count */}
       {totalProducts > 0 && (
         <p className="product-count">
           Showing {start}–{end} of {totalProducts} products
@@ -117,7 +145,7 @@ export default function Products() {
       {loading && <p>Loading...</p>}
       {error && <p className="error-text">{error}</p>}
 
-      {/* Grid */}
+      {/* Product Grid */}
       <div className="product-grid">
         {products.map((p) => {
           const cartItem = cart.find(
@@ -127,9 +155,9 @@ export default function Products() {
           return (
             <div key={p.id} className="product-card">
               <img
-                  src={p.image_url}
-                  alt={p.title}
-                  className="product-image"
+                src={`${BASE_IMAGE_URL}${p.image_url}`}
+                alt={p.title}
+                className="product-image"
               />
 
               <h4>{p.title}</h4>
@@ -161,7 +189,10 @@ export default function Products() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="pagination">
-          <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
             Prev
           </button>
 
@@ -175,7 +206,10 @@ export default function Products() {
             </button>
           ))}
 
-          <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+          >
             Next
           </button>
         </div>
