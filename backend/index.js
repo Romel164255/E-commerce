@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { pool } from "./db.js";
 
 import authRoutes from "./routes/auth.js";
-import userRoutes from "./routes/users.js";
 import productRoutes from "./routes/products.js";
 import cartRoutes from "./routes/cart.js";
 import orderRoutes from "./routes/order.js";
