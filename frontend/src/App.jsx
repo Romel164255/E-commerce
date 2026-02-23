@@ -4,8 +4,7 @@ import Layout from "./pages/Layout";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import Auth from "./pages/Auth";
 import CheckoutAddress from "./pages/CheckoutAddress";
 import CheckoutPayment from "./pages/CheckoutPayment";
 import AdminLayout from "./pages/admin/AdminLayout";
@@ -25,8 +24,7 @@ function App() {
          <Route index element={<Products />} />
          <Route path="cart" element={<Cart />} />
          <Route path="orders" element={<Orders />} />
-         <Route path="register" element={<Register />} />
-         <Route path="login" element={<Login/>} />
+         <Route path="auth" element={<Auth />} />
          <Route path="checkout/address" element={<CheckoutAddress />} />
          <Route path="checkout/payment" element={<CheckoutPayment />} />
 

@@ -6,18 +6,19 @@ export default function Layout() {
   const { totalItems } = useCart();
   const navigate = useNavigate();
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Read auth data
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
   const email = localStorage.getItem("email");
-
-  const [menuOpen, setMenuOpen] = useState(false);
 
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("email");
-    navigate("/");
-    window.location.reload();
+
+    navigate("/"); // ✅ No page reload
   };
 
   return (
@@ -36,7 +37,7 @@ export default function Layout() {
             Cart ({totalItems})
           </Link>
 
-          {/* 👑 Admin Link (Visible Only To Admin) */}
+          {/* 👑 Admin Link */}
           {token && role === "admin" && (
             <Link to="/admin" className="admin-link">
               Admin
@@ -59,10 +60,7 @@ export default function Layout() {
                     <button onClick={logout}>Logout</button>
                   </>
                 ) : (
-                  <>
-                    <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
-                  </>
+                  <Link to="/auth">Login / Register</Link>
                 )}
               </div>
             )}
