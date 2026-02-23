@@ -12,7 +12,7 @@ export default function Orders() {
         const res = await api.get("/orders");
         setOrders(res.data.data);
       } catch {
-        navigate("/login");
+        navigate("/auth");
       }
     };
 

@@ -19,7 +19,7 @@ export default function Cart() {
     e.stopPropagation();  // extra safety
 
     if (!token) {
-      navigate("/login");
+      navigate("/auth");
       return;
     }
 

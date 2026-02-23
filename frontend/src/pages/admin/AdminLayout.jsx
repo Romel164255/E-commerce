@@ -8,7 +8,7 @@ export default function AdminLayout() {
   const role = localStorage.getItem("role");
 
   if (!role) {
-    navigate("/login");
+    navigate("/auth");
     return;
   }
 
