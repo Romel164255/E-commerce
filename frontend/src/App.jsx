@@ -5,8 +5,10 @@ import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import Orders from "./pages/Orders";
 import Auth from "./pages/Auth";
+import OAuthHandler from "./pages/OAuthHandler";
 import CheckoutAddress from "./pages/CheckoutAddress";
 import CheckoutPayment from "./pages/CheckoutPayment";
+
 import AdminLayout from "./pages/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import ProductsAdmin from "./pages/admin/ProductsAdmin";
@@ -21,24 +23,28 @@ function App() {
     <Routes>
       <Route path="/" element={<Layout />}>
 
-         <Route index element={<Products />} />
-         <Route path="cart" element={<Cart />} />
-         <Route path="orders" element={<Orders />} />
-         <Route path="auth" element={<Auth />} />
-         <Route path="checkout/address" element={<CheckoutAddress />} />
-         <Route path="checkout/payment" element={<CheckoutPayment />} />
+        {/* OAuth Redirect */}
+        <Route path="oauth" element={<OAuthHandler />} />
 
-  {/* ADMIN ROUTES */}
-         <Route path="admin" element={<AdminLayout />}>
-         <Route index element={<Dashboard />} />
-         <Route path="dashboard" element={<Dashboard />} />
-         <Route path="products" element={<ProductsAdmin />} />
-         <Route path="users" element={<UsersAdmin />} />
-         <Route path="orders" element={<OrdersAdmin />} />
-         <Route path="analytics" element={<Analytics />} />
-  </Route>
+        {/* Public Routes */}
+        <Route index element={<Products />} />
+        <Route path="cart" element={<Cart />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="auth" element={<Auth />} />
+        <Route path="checkout/address" element={<CheckoutAddress />} />
+        <Route path="checkout/payment" element={<CheckoutPayment />} />
 
-</Route>
+        {/* Admin Routes */}
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="products" element={<ProductsAdmin />} />
+          <Route path="users" element={<UsersAdmin />} />
+          <Route path="orders" element={<OrdersAdmin />} />
+          <Route path="analytics" element={<Analytics />} />
+        </Route>
+
+      </Route>
     </Routes>
   );
 }

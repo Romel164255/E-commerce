@@ -62,6 +62,15 @@ export default function Auth() {
             {isLogin ? " Register here" : " Login here"}
           </span>
         </p>
+        <div className="G-login">
+            <button
+                onClick={() => {
+                window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;                }}
+                className="google-btn"
+                >
+                Continue with Google
+                </button>
+        </div>
       </div>
     </div>
   );
