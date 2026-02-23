@@ -1,6 +1,11 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import passport from "passport";
+
+import configurePassport from "./config/passport.js";
 import { pool } from "./db.js";
 
 import authRoutes from "./routes/auth.js";
@@ -14,15 +19,26 @@ import adminRoutes from "./routes/admin.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 
+/* ===============================
+   LOAD ENV VARIABLES FIRST
+=============================== */
 dotenv.config();
 
+/* ===============================
+   CREATE APP (MUST BE BEFORE app.use)
+=============================== */
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 /* ===============================
-   CORS CONFIG (LOCAL + PROD)
+   CONFIGURE PASSPORT
+   (AFTER dotenv + BEFORE routes)
 =============================== */
+configurePassport();
 
+/* ===============================
+   CORS CONFIG
+=============================== */
 const allowedOrigins = [
   "http://localhost:5173",
   process.env.FRONTEND_URL,
@@ -52,6 +68,18 @@ app.use(
 =============================== */
 
 app.use(express.json());
+app.use(cookieParser());
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "keyboardcat",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 /* ===============================
    API ROUTES
@@ -64,12 +92,11 @@ app.use("/orders", orderRoutes);
 app.use("/addresses", addressRoutes);
 app.use("/search", searchRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use("/admin", adminRoutes); // ✅ only here
+app.use("/admin", adminRoutes);
 
 /* ===============================
    ERROR HANDLER
 =============================== */
-
 app.use(errorHandler);
 
 /* ===============================
