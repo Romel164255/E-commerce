@@ -9,35 +9,30 @@ export default function OrdersAdmin() {
       const { data } = await api.get("/admin/orders");
       setOrders(data);
     };
-
     fetchOrders();
   }, []);
 
   return (
     <div>
-      <h2>All Orders</h2>
+      <h2>Orders</h2>
 
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Created</th>
-          </tr>
-        </thead>
+      {orders.map(order => (
+        <div key={order.order_id} className="order-card">
+          <h4>Order #{order.order_id}</h4>
+          <p>Email: {order.email}</p>
+          <p>Total: ₹{order.total}</p>
+          <p>Status: {order.status}</p>
+          <p>Payment: {order.payment_status}</p>
 
-        <tbody>
-          {orders.map(order => (
-            <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>₹{order.total}</td>
-              <td>{order.status}</td>
-              <td>{new Date(order.created_at).toLocaleDateString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+          <ul>
+            {order.items.map((item, i) => (
+              <li key={i}>
+                {item.product} × {item.quantity} (₹{item.price})
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }

@@ -4,18 +4,19 @@ import api from "../../api/axios";
 export default function UsersAdmin() {
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const { data } = await api.get("/admin/users");
-        setUsers(data);
-      } catch {
-        console.error("Failed to fetch users");
-      }
-    };
+  const fetchUsers = async () => {
+    const { data } = await api.get("/admin/users");
+    setUsers(data.data);
+  };
 
+  useEffect(() => {
     fetchUsers();
   }, []);
+
+  const updateRole = async (id, role) => {
+    await api.patch(`/admin/users/${id}/role`, { role });
+    fetchUsers();
+  };
 
   return (
     <div>
@@ -24,20 +25,27 @@ export default function UsersAdmin() {
       <table className="admin-table">
         <thead>
           <tr>
-            <th>ID</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Created</th>
+            <th>Change</th>
           </tr>
         </thead>
 
         <tbody>
-          {users.map(user => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.email}</td>
-              <td>{user.role}</td>
-              <td>{new Date(user.created_at).toLocaleDateString()}</td>
+          {users.map(u => (
+            <tr key={u.id}>
+              <td>{u.email}</td>
+              <td>{u.role}</td>
+              <td>
+                <select
+                  value={u.role}
+                  onChange={(e) => updateRole(u.id, e.target.value)}
+                >
+                  <option value="USER">USER</option>
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="BLOCKED">BLOCKED</option>
+                </select>
+              </td>
             </tr>
           ))}
         </tbody>

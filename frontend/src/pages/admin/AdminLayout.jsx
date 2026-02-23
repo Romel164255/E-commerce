@@ -1,36 +1,34 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import "./Admin.css";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
     const role = localStorage.getItem("role");
-    if (role !== "admin") {
+    if (role !== "ADMIN") {
       navigate("/");
     }
   }, [navigate]);
 
   return (
-    <div className="admin-layout">
+    <div className="admin-container">
 
-      {/* Sidebar */}
       <aside className="admin-sidebar">
-        <h2 className="admin-title">Admin</h2>
+        <h2 className="logo">Admin Panel</h2>
 
-        <nav className="admin-nav">
-          <Link to="dashboard">Dashboard</Link>
-          <Link to="products">Products</Link>
-          <Link to="users">Users</Link>
-          <Link to="orders">Orders</Link>
-          <Link to="analytics">Analytics</Link>
+        <nav>
+          <NavLink to="dashboard">Dashboard</NavLink>
+          <NavLink to="products">Products</NavLink>
+          <NavLink to="users">Users</NavLink>
+          <NavLink to="orders">Orders</NavLink>
         </nav>
       </aside>
 
-      {/* Content */}
-      <div className="admin-content">
+      <main className="admin-main">
         <Outlet />
-      </div>
+      </main>
 
     </div>
   );
