@@ -4,12 +4,18 @@ import { useEffect } from "react";
 export default function AdminLayout() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const role = localStorage.getItem("role");
-    if (role !== "ADMIN") {
-      navigate("/");
-    }
-  }, [navigate]);
+ useEffect(() => {
+  const role = localStorage.getItem("role");
+
+  if (!role) {
+    navigate("/login");
+    return;
+  }
+
+  if (role !== "admin") {
+    navigate("/");
+  }
+}, [navigate]);
 
   return (
     <div className="admin-container">
