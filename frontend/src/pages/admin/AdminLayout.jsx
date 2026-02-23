@@ -1,6 +1,5 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import "./Admin.css";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
