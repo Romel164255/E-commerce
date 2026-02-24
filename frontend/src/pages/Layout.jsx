@@ -38,7 +38,7 @@ export default function Layout() {
           </Link>
 
           {/* 👑 Admin Link */}
-          {token && role === "admin" && (
+          {token && role === "ADMIN" && (
             <Link to="/admin" className="admin-link">
               Admin
             </Link>
