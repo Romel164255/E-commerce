@@ -25,20 +25,20 @@ import { errorHandler } from "./middleware/errorHandler.js";
 dotenv.config();
 
 /* ===============================
-   CREATE APP (MUST BE BEFORE app.use)
+   CREATE APP
 =============================== */
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 /* ===============================
    CONFIGURE PASSPORT
-   (AFTER dotenv + BEFORE routes)
 =============================== */
 configurePassport();
 
 /* ===============================
-   CORS CONFIG
+   CORS CONFIG (FIXED)
 =============================== */
+
 const allowedOrigins = [
   "http://localhost:5173",
   process.env.FRONTEND_URL,
@@ -46,7 +46,7 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
@@ -60,8 +60,13 @@ app.use(
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Explicitly handle preflight
+app.options("*", cors());
 
 /* ===============================
    GLOBAL MIDDLEWARES
@@ -82,7 +87,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 /* ===============================
-   API ROUTES
+   ROUTES
 =============================== */
 
 app.use("/auth", authRoutes);
