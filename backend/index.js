@@ -65,8 +65,6 @@ app.use(
   })
 );
 
-// Explicitly handle preflight
-app.options("*", cors());
 
 /* ===============================
    GLOBAL MIDDLEWARES
