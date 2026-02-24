@@ -29,41 +29,52 @@ export default function ProductsAdmin() {
   };
 
   return (
-    <div>
-      <h2>Products</h2>
+  <div>
+    <h2>Products</h2>
 
-      <input type="file" onChange={uploadCSV} />
-
-      <table className="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Update</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map(p => (
-            <tr key={p.id}>
-              <td>{p.id}</td>
-              <td>{p.title}</td>
-              <td>₹{p.price}</td>
-              <td>{p.stock}</td>
-              <td>
-                <button onClick={() => updateStock(p.id, p.stock + 1)}>+1</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className="pagination">
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</button>
-        <span>{page} / {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</button>
-      </div>
+    <div className="file-upload-wrapper">
+      <label htmlFor="csvUpload" className="file-upload-label">
+        📁 Upload CSV
+      </label>
+      <input
+        id="csvUpload"
+        type="file"
+        accept=".csv"
+        onChange={uploadCSV}
+        className="file-upload-input"
+      />
     </div>
-  );
+
+    <table className="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {products.map(p => (
+          <tr key={p.id}>
+            <td>{p.id}</td>
+            <td>{p.title}</td>
+            <td>₹{p.price}</td>
+            <td>{p.stock}</td>
+            <td>
+              <button onClick={() => updateStock(p.id, p.stock + 1)}>+1</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    <div className="pagination">
+      <button disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</button>
+      <span>{page} / {totalPages}</span>
+      <button disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</button>
+    </div>
+  </div>
+);
 }

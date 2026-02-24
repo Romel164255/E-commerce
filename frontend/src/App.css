@@ -1207,3 +1207,31 @@ img {
   cursor: pointer;
   margin-left: 5px;
 }
+
+.file-upload-wrapper {
+  margin: 20px 0;
+}
+
+.file-upload-input {
+  display: none;
+}
+
+.file-upload-label {
+  display: inline-block;
+  padding: 10px 18px;
+  background-color: #4f46e5;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.file-upload-label:hover {
+  background-color: #4338ca;
+  transform: translateY(-2px);
+}
+
+.file-upload-label:active {
+  transform: scale(0.98);
+}
