@@ -12,7 +12,7 @@ export default function AdminLayout() {
     return;
   }
 
-  if (role !== "admin") {
+  if (role.toUpperCase() !== "ADMIN") {
     navigate("/");
   }
 }, [navigate]);
