@@ -9,7 +9,8 @@ import Orders from "./Orders";
    CLOUDINARY CONFIG
 =============================== */
 const CLOUD_NAME = "dntjt9qhl";
-const BASE_IMAGE_URL = `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/`;
+const buildImageUrl = (width, publicId) =>
+  `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_${width}/${publicId}`;
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,11 +29,10 @@ export default function Products() {
   const [category, setCategory] = useState(searchParams.get("category") || "");
 
   const { cart, addToCart, updateQuantity } = useCart();
-
   const limit = 14;
 
   /* ===============================
-     SYNC STATE WITH URL
+     SYNC URL
   =============================== */
   useEffect(() => {
     setSearchParams({
@@ -74,6 +74,26 @@ export default function Products() {
     fetchProducts();
   }, [page, sort, gender, category]);
 
+  /* ===============================
+     PRELOAD FIRST IMAGE
+  =============================== */
+  useEffect(() => {
+    if (products.length > 0) {
+      const firstImage = buildImageUrl(400, products[0].image_url);
+
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = firstImage;
+
+      document.head.appendChild(link);
+
+      return () => {
+        document.head.removeChild(link);
+      };
+    }
+  }, [products]);
+
   const start = totalProducts === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(page * limit, totalProducts);
 
@@ -93,34 +113,19 @@ export default function Products() {
 
   return (
     <div className="home-layout">
-
-      {/* LEFT SIDE — PRODUCTS */}
       <div className="left-content">
-
         <div className="products-container">
           <h2 className="page-title">Products</h2>
 
           {/* Filters */}
           <div className="filter-bar">
-            <select
-              value={sort}
-              onChange={(e) => {
-                setPage(1);
-                setSort(e.target.value);
-              }}
-            >
+            <select value={sort} onChange={(e) => { setPage(1); setSort(e.target.value); }}>
               <option value="">Sort</option>
               <option value="price_asc">Price: Low → High</option>
               <option value="price_desc">Price: High → Low</option>
             </select>
 
-            <select
-              value={gender}
-              onChange={(e) => {
-                setPage(1);
-                setGender(e.target.value);
-              }}
-            >
+            <select value={gender} onChange={(e) => { setPage(1); setGender(e.target.value); }}>
               <option value="">All Genders</option>
               <option value="Men">Men</option>
               <option value="Women">Women</option>
@@ -128,13 +133,7 @@ export default function Products() {
               <option value="Girls">Girls</option>
             </select>
 
-            <select
-              value={category}
-              onChange={(e) => {
-                setPage(1);
-                setCategory(e.target.value);
-              }}
-            >
+            <select value={category} onChange={(e) => { setPage(1); setCategory(e.target.value); }}>
               <option value="">All Categories</option>
               <option value="Apparel">Apparel</option>
               <option value="Footwear">Footwear</option>
@@ -153,16 +152,22 @@ export default function Products() {
           {/* Product Grid */}
           <div className="product-grid">
             {products.map((p) => {
-              const cartItem = cart.find(
-                (item) => item.product_id === p.id
-              );
+              const cartItem = cart.find(item => item.product_id === p.id);
 
               return (
                 <div key={p.id} className="product-card">
+
                   <img
-                    src={`${BASE_IMAGE_URL}${p.image_url}`}
+                    src={buildImageUrl(300, p.image_url)}
+                    srcSet={`
+                      ${buildImageUrl(200, p.image_url)} 200w,
+                      ${buildImageUrl(400, p.image_url)} 400w,
+                      ${buildImageUrl(800, p.image_url)} 800w
+                    `}
+                    sizes="(max-width: 600px) 200px, 300px"
                     alt={p.title}
                     className="product-image"
+                    loading="lazy"
                   />
 
                   <h4>{p.title}</h4>
@@ -186,6 +191,7 @@ export default function Products() {
                       Add to Cart
                     </button>
                   )}
+
                 </div>
               );
             })}
@@ -194,10 +200,7 @@ export default function Products() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="pagination">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
+              <button disabled={page === 1} onClick={() => setPage(page - 1)}>
                 Prev
               </button>
 
@@ -223,13 +226,11 @@ export default function Products() {
         </div>
       </div>
 
-      {/* RIGHT SIDE — ORDERS SIDEBAR */}
       {localStorage.getItem("token") && (
         <div className="right-sidebar">
           <Orders />
         </div>
       )}
-
     </div>
   );
 }
