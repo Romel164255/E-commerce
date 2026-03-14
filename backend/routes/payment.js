@@ -1,16 +1,14 @@
 import express from "express";
 import crypto from "crypto";
 import { pool } from "../db.js";
-import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
 router.post("/verify", async (req, res) => {
-
   const {
     razorpay_order_id,
     razorpay_payment_id,
-    razorpay_signature
+    razorpay_signature,
   } = req.body;
 
   const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -29,7 +27,7 @@ router.post("/verify", async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    // Update order
+    // Update order payment status
     await client.query(
       `
       UPDATE orders
@@ -43,21 +41,23 @@ router.post("/verify", async (req, res) => {
       [razorpay_payment_id, razorpay_signature, razorpay_order_id]
     );
 
-    // Deduct stock safely
-    await client.query(`
+    // Deduct stock safely using parameterized query (fixes SQL injection)
+    await client.query(
+      `
       UPDATE products p
       SET stock = p.stock - oi.quantity
       FROM order_items oi
       WHERE oi.product_id = p.id
       AND oi.order_id = (
-        SELECT id FROM orders WHERE razorpay_order_id = '${razorpay_order_id}'
+        SELECT id FROM orders WHERE razorpay_order_id = $1
       )
-    `);
+      `,
+      [razorpay_order_id]
+    );
 
     await client.query("COMMIT");
 
     res.json({ success: true });
-
   } catch (err) {
     await client.query("ROLLBACK");
     res.status(500).json({ error: "Payment update failed" });

@@ -18,6 +18,11 @@ import paymentRoutes from "./routes/payment.js";
 import adminRoutes from "./routes/admin.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
+import {
+  authLimiter,
+  paymentLimiter,
+  generalLimiter,
+} from "./middleware/rateLimiter.js";
 
 /* ===============================
    LOAD ENV VARIABLES FIRST
@@ -36,9 +41,8 @@ const PORT = process.env.PORT || 5000;
 configurePassport();
 
 /* ===============================
-   CORS CONFIG (FIXED)
+   CORS CONFIG
 =============================== */
-
 const allowedOrigins = [
   "http://localhost:5173",
   process.env.FRONTEND_URL,
@@ -65,11 +69,9 @@ app.use(
   })
 );
 
-
 /* ===============================
    GLOBAL MIDDLEWARES
 =============================== */
-
 app.use(express.json());
 app.use(cookieParser());
 
@@ -85,9 +87,24 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 /* ===============================
-   ROUTES
+   RATE LIMITING
+   Applied before routes so all
+   requests are throttled
 =============================== */
 
+// General limiter on all routes
+app.use(generalLimiter);
+
+// Strict limiter on auth routes
+app.use("/auth/login", authLimiter);
+app.use("/auth/register", authLimiter);
+
+// Payment limiter
+app.use("/api/payment", paymentLimiter);
+
+/* ===============================
+   ROUTES
+=============================== */
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
@@ -105,7 +122,6 @@ app.use(errorHandler);
 /* ===============================
    START SERVER
 =============================== */
-
 app.listen(PORT, async () => {
   try {
     await pool.query("SELECT 1");
