@@ -1,6 +1,13 @@
 node_modules/
+dist/
+
 .env
+*.env
 
+uploads/
+coverage/
 
-backend/uploads/
-backend/uploads.zip
+*.log
+npm-debug.log*
+
+.DS_Store
