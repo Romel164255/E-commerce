@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api/axios";
 import { useCart } from "../context/useCart";
 import QuantitySelector from "../components/QuantitySelector";
@@ -31,6 +31,7 @@ const buildImageUrl = (width, imageRef) => {
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const initialPage = parseInt(searchParams.get("page")) || 1;
 
   const [products, setProducts] = useState([]);
@@ -47,10 +48,20 @@ export default function Products() {
 
   const { cart, addToCart, updateQuantity } = useCart();
   const limit = 14;
+  const isAuthenticated = Boolean(localStorage.getItem("token"));
   const cartByProductId = useMemo(
     () => new Map(cart.map((item) => [item.product_id, item])),
     [cart]
   );
+
+  const handleAddToCart = async (product) => {
+    if (!isAuthenticated) {
+      navigate("/auth");
+      return;
+    }
+
+    await addToCart(product);
+  };
 
   /* ===============================
      SYNC URL
@@ -207,9 +218,9 @@ export default function Products() {
                   ) : (
                     <button
                       className="primary-btn"
-                      onClick={() => addToCart(p)}
+                      onClick={() => handleAddToCart(p)}
                     >
-                      Add to Cart
+                      {isAuthenticated ? "Add to Cart" : "Login to Add"}
                     </button>
                   )}
 
