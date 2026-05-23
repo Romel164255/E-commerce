@@ -5,6 +5,8 @@ export default function ProductsAdmin() {
   const [products, setProducts] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchProducts = async (p = 1) => {
     const { data } = await api.get(`/admin/products?page=${p}`);
@@ -13,24 +15,50 @@ export default function ProductsAdmin() {
   };
 
   useEffect(() => {
-    fetchProducts(page);
+    let isMounted = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const { data } = await api.get(`/admin/products?page=${page}`);
+        if (isMounted) {
+          setProducts(data.data);
+          setTotalPages(data.totalPages);
+        }
+      } catch {
+        if (isMounted) {
+          setError("Failed to load products");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
   }, [page]);
 
   const updateStock = async (id, stock) => {
     await api.patch(`/admin/products/${id}`, { stock });
-    fetchProducts(page);
+    await fetchProducts(page);
   };
 
   const uploadCSV = async (e) => {
     const formData = new FormData();
     formData.append("file", e.target.files[0]);
     await api.post("/admin/products/upload", formData);
-    fetchProducts(page);
+    await fetchProducts(page);
   };
 
   return (
   <div>
     <h2>Products</h2>
+    {loading && <p>Loading...</p>}
+    {error && <p className="error-text">{error}</p>}
 
     <div className="file-upload-wrapper">
       <label htmlFor="csvUpload" className="file-upload-label">

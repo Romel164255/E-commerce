@@ -1,16 +1,33 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import api from "../api/axios";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/useCart";
 import QuantitySelector from "../components/QuantitySelector";
-import Orders from "./Orders";
+
+const Orders = lazy(() => import("./Orders"));
 
 /* ===============================
    CLOUDINARY CONFIG
 =============================== */
 const CLOUD_NAME = "dntjt9qhl";
-const buildImageUrl = (width, publicId) =>
-  `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_${width}/${publicId}`;
+const buildImageUrl = (width, imageRef) => {
+  if (!imageRef) return "";
+
+  if (imageRef.startsWith("http")) {
+    const marker = "/image/upload/";
+    const markerIndex = imageRef.indexOf(marker);
+
+    if (markerIndex === -1) return imageRef;
+
+    const cloudinaryPath = imageRef
+      .slice(markerIndex + marker.length)
+      .replace(/^v\d+\//, "");
+
+    return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_${width}/${cloudinaryPath}`;
+  }
+
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/f_auto,q_auto,w_${width}/${imageRef}`;
+};
 
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,6 +47,10 @@ export default function Products() {
 
   const { cart, addToCart, updateQuantity } = useCart();
   const limit = 14;
+  const cartByProductId = useMemo(
+    () => new Map(cart.map((item) => [item.product_id, item])),
+    [cart]
+  );
 
   /* ===============================
      SYNC URL
@@ -152,7 +173,7 @@ export default function Products() {
           {/* Product Grid */}
           <div className="product-grid">
             {products.map((p) => {
-              const cartItem = cart.find(item => item.product_id === p.id);
+              const cartItem = cartByProductId.get(p.id);
 
               return (
                 <div key={p.id} className="product-card">
@@ -228,7 +249,9 @@ export default function Products() {
 
       {localStorage.getItem("token") && (
         <div className="right-sidebar">
-          <Orders />
+          <Suspense fallback={<p>Loading orders...</p>}>
+            <Orders />
+          </Suspense>
         </div>
       )}
     </div>

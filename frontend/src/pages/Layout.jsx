@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/useCart";
 import { useState } from "react";
 
 export default function Layout() {
@@ -17,6 +17,7 @@ export default function Layout() {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     localStorage.removeItem("email");
+    window.dispatchEvent(new Event("auth-changed"));
 
     navigate("/"); // ✅ No page reload
   };

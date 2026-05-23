@@ -1,7 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "../api/axios";
-
-const CartContext = createContext();
+import { CartContext } from "./CartStateContext";
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
@@ -11,41 +10,61 @@ export const CartProvider = ({ children }) => {
      FETCH CART FROM BACKEND
   =============================== */
 
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await api.get("/cart");
       setCart(data);
-    } catch (err) {
+    } catch {
       console.error("Failed to load cart");
       setCart([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   /* ===============================
      ADD TO CART (BACKEND)
   =============================== */
 
-  const addToCart = async (product) => {
+  const addToCart = useCallback(async (product) => {
     try {
       await api.post("/cart", {
-        productId: product.id,
-        quantity: 1
+        productId: Number(product.id),
+        quantity: 1,
       });
 
-      await fetchCart(); // reload from DB
+      await fetchCart();
     } catch (err) {
       alert(err.response?.data?.error || "Failed to add to cart");
     }
-  };
+  }, [fetchCart]);
+
+  /* ===============================
+     REMOVE ITEM
+  =============================== */
+
+  const removeItem = useCallback(async (cartItemId) => {
+    try {
+      await api.delete(`/cart/${cartItemId}`);
+      await fetchCart();
+    } catch {
+      alert("Failed to remove item");
+    }
+  }, [fetchCart]);
 
   /* ===============================
      UPDATE QUANTITY
   =============================== */
 
-  const updateQuantity = async (cartItemId, newQty) => {
+  const updateQuantity = useCallback(async (cartItemId, newQty) => {
+    const cartItem = cart.find((item) => item.id === cartItemId);
+
+    if (!cartItem) {
+      alert("Cart item not found");
+      return;
+    }
+
     if (newQty <= 0) {
       await removeItem(cartItemId);
       return;
@@ -53,37 +72,27 @@ export const CartProvider = ({ children }) => {
 
     try {
       await api.post("/cart", {
-        productId: cart.find(i => i.id === cartItemId)?.product_id,
-        quantity: newQty - cart.find(i => i.id === cartItemId)?.quantity
+        productId: cartItem.product_id,
+        quantity: newQty - cartItem.quantity,
       });
 
       await fetchCart();
-    } catch (err) {
+    } catch {
       alert("Failed to update quantity");
     }
-  };
-
-  /* ===============================
-     REMOVE ITEM
-  =============================== */
-
-  const removeItem = async (cartItemId) => {
-    try {
-      await api.delete(`/cart/${cartItemId}`);
-      await fetchCart();
-    } catch (err) {
-      alert("Failed to remove item");
-    }
-  };
+  }, [cart, fetchCart, removeItem]);
 
   /* ===============================
      TOTALS
   =============================== */
 
-  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.quantity * item.price,
-    0
+  const totalItems = useMemo(
+    () => cart.reduce((sum, item) => sum + item.quantity, 0),
+    [cart]
+  );
+  const totalPrice = useMemo(
+    () => cart.reduce((sum, item) => sum + item.quantity * item.price, 0),
+    [cart]
   );
 
   /* ===============================
@@ -91,28 +100,53 @@ export const CartProvider = ({ children }) => {
   =============================== */
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetchCart();
-    }
-  }, []);
+    const syncCartOnAuthChange = () => {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        void fetchCart();
+      } else {
+        setCart([]);
+      }
+    };
+
+    syncCartOnAuthChange();
+
+    window.addEventListener("storage", syncCartOnAuthChange);
+    window.addEventListener("auth-changed", syncCartOnAuthChange);
+
+    return () => {
+      window.removeEventListener("storage", syncCartOnAuthChange);
+      window.removeEventListener("auth-changed", syncCartOnAuthChange);
+    };
+  }, [fetchCart]);
+
+  const value = useMemo(
+    () => ({
+      cart,
+      loading,
+      addToCart,
+      updateQuantity,
+      removeItem,
+      totalItems,
+      totalPrice,
+      fetchCart,
+    }),
+    [
+      cart,
+      loading,
+      addToCart,
+      updateQuantity,
+      removeItem,
+      totalItems,
+      totalPrice,
+      fetchCart,
+    ]
+  );
 
   return (
-    <CartContext.Provider
-      value={{
-        cart,
-        loading,
-        addToCart,
-        updateQuantity,
-        removeItem,
-        totalItems,
-        totalPrice,
-        fetchCart
-      }}
-    >
+    <CartContext.Provider value={value}>
       {children}
     </CartContext.Provider>
   );
 };
-
-export const useCart = () => useContext(CartContext);

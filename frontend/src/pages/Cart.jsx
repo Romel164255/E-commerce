@@ -1,4 +1,4 @@
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/useCart";
 import { useNavigate } from "react-router-dom";
 import QuantitySelector from "../components/QuantitySelector";
 

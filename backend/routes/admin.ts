@@ -202,43 +202,79 @@ router.post(
 
       return;
     }
+    const filePath = req.file.path;
 
-    const results: Record<string, string>[] = [];
+    const productCodes: string[] = [];
+    const titles: string[] = [];
+    const prices: number[] = [];
+    const stocks: number[] = [];
 
-    fs.createReadStream(req.file.path)
+    fs.createReadStream(filePath)
       .pipe(csv())
       .on("data", (data: Record<string, string>) => {
-        results.push(data);
+        const productCode = data.product_code?.trim();
+        const title = data.title?.trim();
+        const price = Number(data.price);
+        const stock = Number(data.stock);
+
+        if (
+          !productCode ||
+          !title ||
+          !Number.isFinite(price) ||
+          !Number.isFinite(stock)
+        ) {
+          return;
+        }
+
+        productCodes.push(productCode);
+        titles.push(title);
+        prices.push(price);
+        stocks.push(Math.max(0, Math.floor(stock)));
       })
       .on("end", async () => {
         try {
-          for (const row of results) {
-            await pool.query(
-              `
-              INSERT INTO products
-              (
-                product_code,
-                title,
-                price,
-                stock,
-                created_at
-              )
-              VALUES ($1, $2, $3, $4, NOW())
-              ON CONFLICT (product_code)
-              DO UPDATE SET stock = EXCLUDED.stock
-              `,
-              [
-                row.product_code,
-                row.title,
-                row.price,
-                row.stock,
-              ]
-            );
+          if (productCodes.length === 0) {
+            res.status(400).json({
+              error: "No valid rows found in CSV",
+            });
+            return;
           }
+
+          await pool.query(
+            `
+            INSERT INTO products
+            (
+              product_code,
+              title,
+              price,
+              stock,
+              created_at
+            )
+            SELECT
+              rows.product_code,
+              rows.title,
+              rows.price,
+              rows.stock,
+              NOW()
+            FROM UNNEST(
+              $1::text[],
+              $2::text[],
+              $3::numeric[],
+              $4::int[]
+            ) AS rows(product_code, title, price, stock)
+            ON CONFLICT (product_code)
+            DO UPDATE
+              SET stock = EXCLUDED.stock,
+                  price = EXCLUDED.price,
+                  title = EXCLUDED.title,
+                  updated_at = NOW()
+            `,
+            [productCodes, titles, prices, stocks]
+          );
 
           res.json({
             success: true,
-            inserted: results.length,
+            inserted: productCodes.length,
           });
         } catch (err) {
           console.error("CSV_UPLOAD_ERROR:", err);
@@ -246,7 +282,16 @@ router.post(
           res.status(500).json({
             error: "CSV upload failed",
           });
+        } finally {
+          fs.unlink(filePath, () => undefined);
         }
+      })
+      .on("error", (err) => {
+        console.error("CSV_STREAM_ERROR:", err);
+        fs.unlink(filePath, () => undefined);
+        res.status(500).json({
+          error: "Failed to process CSV",
+        });
       });
   }
 );
@@ -355,21 +400,17 @@ router.get(
   authorizeAdmin,
   async (_req: Request, res: Response) => {
     try {
-      const revenue = await pool.query<{ coalesce: string }>(
-        `
-        SELECT COALESCE(SUM(total),0)
-        FROM orders
-        WHERE status='PAID'
-        `
-      );
-
-      const totalOrders = await pool.query<{ count: string }>(
-        "SELECT COUNT(*) FROM orders"
-      );
-
-      const totalUsers = await pool.query<{ count: string }>(
-        "SELECT COUNT(*) FROM users"
-      );
+      const [revenue, totalOrders, totalUsers] = await Promise.all([
+        pool.query<{ coalesce: string }>(
+          `
+          SELECT COALESCE(SUM(total),0)
+          FROM orders
+          WHERE status='PAID'
+          `
+        ),
+        pool.query<{ count: string }>("SELECT COUNT(*) FROM orders"),
+        pool.query<{ count: string }>("SELECT COUNT(*) FROM users"),
+      ]);
 
       res.json({
         revenue: parseFloat(revenue.rows[0].coalesce),

@@ -7,7 +7,6 @@ export const registerUser = async (email, password) => {
         const result = await pool.query(`INSERT INTO users (email, password_hash)
        VALUES ($1, $2)
        RETURNING id, email, role`, [email, hashed]);
-        console.log("INSERT SUCCESS:", result.rows);
         const user = result.rows[0];
         const token = jwt.sign({ userId: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "1h" });
         return { token, role: user.role };

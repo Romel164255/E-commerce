@@ -117,6 +117,7 @@ export interface CreateProductParams {
 
 export interface CartItemWithProduct {
   id: number;
+  product_id: number;
   title: string;
   price: number;
   image_url?: string;

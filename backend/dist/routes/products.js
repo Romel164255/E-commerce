@@ -68,6 +68,7 @@ router.get("/", asyncHandler(async (req, res) => {
         category: req.query.category,
         gender: req.query.gender,
     });
+    res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
     res.json(result);
 }));
 /* ===================================================

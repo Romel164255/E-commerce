@@ -82,16 +82,36 @@ export const createOrder = async (
 
     const orderId = orderInsert.rows[0].id;
 
-    // Insert order items
-    for (const item of cartResult.rows) {
-      await client.query(
-        `
-        INSERT INTO order_items (order_id, product_id, quantity, price)
-        VALUES ($1, $2, $3, $4)
-        `,
-        [orderId, item.product_id, item.quantity, item.price]
-      );
-    }
+    // Insert all order items in one query for better checkout performance.
+    const productIds = cartResult.rows.map((item) => item.product_id);
+    const quantities = cartResult.rows.map((item) => item.quantity);
+    const prices = cartResult.rows.map((item) => Number(item.price));
+
+    await client.query(
+      `
+      INSERT INTO order_items (order_id, product_id, quantity, price)
+      SELECT
+        $1,
+        item.product_id,
+        item.quantity,
+        item.price
+      FROM UNNEST($2::int[], $3::int[], $4::numeric[]) AS item(
+        product_id,
+        quantity,
+        price
+      )
+      `,
+      [orderId, productIds, quantities, prices]
+    );
+
+    // Clear the cart once order has been successfully created.
+    await client.query(
+      `
+      DELETE FROM cart_items
+      WHERE user_id = $1
+      `,
+      [userId]
+    );
 
     await client.query("COMMIT");
 

@@ -3,6 +3,8 @@ import api from "../../api/axios";
 
 export default function UsersAdmin() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const fetchUsers = async () => {
     const { data } = await api.get("/admin/users");
@@ -10,17 +12,42 @@ export default function UsersAdmin() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    let isMounted = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const { data } = await api.get("/admin/users");
+        if (isMounted) {
+          setUsers(data.data);
+        }
+      } catch {
+        if (isMounted) {
+          setError("Failed to load users");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const updateRole = async (id, role) => {
     await api.patch(`/admin/users/${id}/role`, { role });
-    fetchUsers();
+    await fetchUsers();
   };
 
   return (
     <div>
       <h2>Users</h2>
+      {loading && <p>Loading...</p>}
+      {error && <p className="error-text">{error}</p>}
 
       <table className="admin-table">
         <thead>

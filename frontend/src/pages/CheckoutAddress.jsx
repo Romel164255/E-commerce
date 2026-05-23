@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "./CheckoutAddress.css";
@@ -7,7 +7,6 @@ export default function CheckoutAddress() {
   const [addresses, setAddresses] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [googleLoaded, setGoogleLoaded] = useState(false);
 
   const [form, setForm] = useState({
     full_name: "",
@@ -19,65 +18,17 @@ export default function CheckoutAddress() {
   const navigate = useNavigate();
 
   /* ==============================
-     INITIAL LOAD
-  ============================== */
-
-  useEffect(() => {
-    loadAddresses();
-    loadGoogleScript();
-  }, []);
-
-  /* ==============================
-     LOAD SAVED ADDRESSES
-  ============================== */
-
-  const loadAddresses = async () => {
-    try {
-      const res = await api.get("/addresses");
-      setAddresses(res.data);
-    } catch (err) {
-      if (err.response?.status === 401) {
-        navigate("/login");
-      }
-    }
-  };
-
-  /* ==============================
-     LOAD GOOGLE SCRIPT DYNAMICALLY
-  ============================== */
-
-  const loadGoogleScript = () => {
-    if (window.google) {
-      setGoogleLoaded(true);
-      initAutocomplete();
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_PLACES_KEY}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-
-    script.onload = () => {
-      setGoogleLoaded(true);
-      initAutocomplete();
-    };
-
-    document.body.appendChild(script);
-  };
-
-  /* ==============================
      INIT AUTOCOMPLETE
   ============================== */
 
-  const initAutocomplete = () => {
-    if (!window.google || !autocompleteRef.current) return;
+  const initAutocomplete = useCallback(() => {
+    if (!window.google?.maps?.places || !autocompleteRef.current) return;
 
     const autocomplete = new window.google.maps.places.Autocomplete(
       autocompleteRef.current,
       {
         types: ["geocode"],
-        componentRestrictions: { country: "in" }
+        componentRestrictions: { country: "in" },
       }
     );
 
@@ -86,12 +37,75 @@ export default function CheckoutAddress() {
 
       if (!place.formatted_address) return;
 
-      setForm(prev => ({
+      setForm((prev) => ({
         ...prev,
-        address_line: place.formatted_address
+        address_line: place.formatted_address,
       }));
     });
-  };
+  }, []);
+
+  /* ==============================
+     LOAD SAVED ADDRESSES
+  ============================== */
+
+  const loadAddresses = useCallback(async () => {
+    try {
+      const res = await api.get("/addresses");
+      setAddresses(res.data);
+    } catch (err) {
+      if (err.response?.status === 401) {
+        navigate("/auth");
+      }
+    }
+  }, [navigate]);
+
+  /* ==============================
+     LOAD GOOGLE SCRIPT DYNAMICALLY
+  ============================== */
+
+  const loadGoogleScript = useCallback(() => {
+    const key = import.meta.env.VITE_GOOGLE_PLACES_KEY;
+
+    if (!key) {
+      console.warn("Google Places API key not configured");
+      return;
+    }
+
+    if (window.google?.maps?.places) {
+      initAutocomplete();
+      return;
+    }
+
+    const scriptId = "google-places-script";
+    const existingScript = document.getElementById(scriptId);
+
+    if (existingScript) {
+      existingScript.addEventListener("load", initAutocomplete, {
+        once: true,
+      });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.id = scriptId;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.addEventListener("load", initAutocomplete, {
+      once: true,
+    });
+
+    document.body.appendChild(script);
+  }, [initAutocomplete]);
+
+  /* ==============================
+     INITIAL LOAD
+  ============================== */
+
+  useEffect(() => {
+    void loadAddresses();
+    loadGoogleScript();
+  }, [loadAddresses, loadGoogleScript]);
 
   /* ==============================
      SAVE ADDRESS

@@ -13,12 +13,14 @@ export default function Auth() {
       if (isLogin) {
         // LOGIN
         const res = await api.post("/auth/login", { email, password });
+        const role = String(res.data.role || "");
 
         localStorage.setItem("token", res.data.token);
-        localStorage.setItem("role", res.data.role);
+        localStorage.setItem("role", role);
         localStorage.setItem("email", email);
+        window.dispatchEvent(new Event("auth-changed"));
 
-        if (res.data.role === "admin") {
+        if (role.toUpperCase() === "ADMIN") {
           navigate("/admin");
         } else {
           navigate("/");

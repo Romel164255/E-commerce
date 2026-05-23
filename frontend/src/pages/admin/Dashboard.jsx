@@ -5,24 +5,40 @@ export default function Dashboard() {
   const [stats, setStats] = useState({});
   const [monthly, setMonthly] = useState([]);
   const [weekly, setWeekly] = useState([]);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      const s = await api.get("/admin/stats");
-      const m = await api.get("/admin/stats/monthly");
-      const w = await api.get("/admin/stats/weekly");
+    let isMounted = true;
 
-      setStats(s.data);
-      setMonthly(m.data);
-      setWeekly(w.data);
+    (async () => {
+      try {
+        const [s, m, w] = await Promise.all([
+          api.get("/admin/stats"),
+          api.get("/admin/stats/monthly"),
+          api.get("/admin/stats/weekly"),
+        ]);
+
+        if (!isMounted) return;
+
+        setStats(s.data);
+        setMonthly(m.data);
+        setWeekly(w.data);
+      } catch {
+        if (isMounted) {
+          setError("Failed to load dashboard data");
+        }
+      }
+    })();
+
+    return () => {
+      isMounted = false;
     };
-
-    fetchData();
   }, []);
 
   return (
     <div>
       <h2>Dashboard</h2>
+      {error && <p className="error-text">{error}</p>}
 
       <div className="card-grid">
         <div className="card">

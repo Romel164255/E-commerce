@@ -17,8 +17,6 @@ export const registerUser = async (
       [email, hashed]
     );
 
-    console.log("INSERT SUCCESS:", result.rows);
-
     const user = result.rows[0];
 
     const token = jwt.sign(
