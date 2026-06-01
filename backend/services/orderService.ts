@@ -28,7 +28,7 @@ export { validTransitions };
 
 export const createOrder = async (
   userId: number,
-  addressId: number
+  addressId: number,
 ): Promise<CreateOrderResult> => {
   const client = await pool.connect();
 
@@ -38,7 +38,7 @@ export const createOrder = async (
     // Validate address
     const addressCheck = await client.query<{ id: number }>(
       "SELECT id FROM addresses WHERE id = $1 AND user_id = $2",
-      [addressId, userId]
+      [addressId, userId],
     );
 
     if (!addressCheck.rows.length) {
@@ -57,7 +57,7 @@ export const createOrder = async (
       JOIN products p ON c.product_id = p.id
       WHERE c.user_id = $1
       `,
-      [userId]
+      [userId],
     );
 
     if (!cartResult.rows.length) {
@@ -67,7 +67,7 @@ export const createOrder = async (
     // Calculate total
     const total = cartResult.rows.reduce(
       (sum, item) => sum + item.quantity * Number(item.price),
-      0
+      0,
     );
 
     // Insert order
@@ -77,7 +77,7 @@ export const createOrder = async (
       VALUES ($1, $2, 'PENDING', $3)
       RETURNING id
       `,
-      [userId, total, addressId]
+      [userId, total, addressId],
     );
 
     const orderId = orderInsert.rows[0].id;
@@ -101,7 +101,7 @@ export const createOrder = async (
         price
       )
       `,
-      [orderId, productIds, quantities, prices]
+      [orderId, productIds, quantities, prices],
     );
 
     // Clear the cart once order has been successfully created.
@@ -110,7 +110,7 @@ export const createOrder = async (
       DELETE FROM cart_items
       WHERE user_id = $1
       `,
-      [userId]
+      [userId],
     );
 
     await client.query("COMMIT");
@@ -133,11 +133,11 @@ export const createOrder = async (
 
 export const payOrder = async (
   userId: number,
-  orderId: string
+  orderId: string,
 ): Promise<PayOrderResult> => {
   const orderCheck = await pool.query<OrderRow>(
     "SELECT * FROM orders WHERE id = $1 AND user_id = $2",
-    [orderId, userId]
+    [orderId, userId],
   );
 
   if (!orderCheck.rows.length) {
@@ -164,7 +164,7 @@ export const payOrder = async (
     SET razorpay_order_id = $1
     WHERE id = $2
     `,
-    [razorpayOrder.id, orderId]
+    [razorpayOrder.id, orderId],
   );
 
   return {
@@ -186,7 +186,7 @@ export const getUserOrders = async (userId: number): Promise<OrderRow[]> => {
     WHERE user_id = $1
     ORDER BY created_at DESC
     `,
-    [userId]
+    [userId],
   );
 
   return result.rows;

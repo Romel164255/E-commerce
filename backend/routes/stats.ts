@@ -7,7 +7,7 @@ const router = express.Router();
 /* Helper to safely extract query results */
 function getValue(
   result: PromiseSettledResult<{ rows: QueryResultRow[] }>,
-  key = "count"
+  key = "count",
 ): number {
   if (result.status !== "fulfilled") return 0;
 
@@ -21,9 +21,7 @@ router.get("/stats", async (_req: Request, res: Response) => {
       pool.query("SELECT COUNT(*)::int AS count FROM products"),
       pool.query("SELECT COUNT(*)::int AS count FROM users"),
       pool.query("SELECT COUNT(*)::int AS count FROM orders"),
-      pool.query(
-        "SELECT COALESCE(SUM(total),0)::int AS revenue FROM orders"
-      ),
+      pool.query("SELECT COALESCE(SUM(total),0)::int AS revenue FROM orders"),
     ]);
 
     const stats = {

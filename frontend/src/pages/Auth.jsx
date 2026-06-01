@@ -25,7 +25,6 @@ export default function Auth() {
         } else {
           navigate("/");
         }
-
       } else {
         // REGISTER
         await api.post("/auth/register", { email, password });
@@ -54,9 +53,7 @@ export default function Auth() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button onClick={handleSubmit}>
-          {isLogin ? "Login" : "Register"}
-        </button>
+        <button onClick={handleSubmit}>{isLogin ? "Login" : "Register"}</button>
 
         <p className="switch-text">
           {isLogin ? "Don't have an account?" : "Already have an account?"}
@@ -65,13 +62,14 @@ export default function Auth() {
           </span>
         </p>
         <div className="G-login">
-            <button
-                onClick={() => {
-                window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;                }}
-                className="google-btn"
-                >
-                Continue with Google
-                </button>
+          <button
+            onClick={() => {
+              window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+            }}
+            className="google-btn"
+          >
+            Continue with Google
+          </button>
         </div>
       </div>
     </div>

@@ -5,21 +5,21 @@ import type { ProductRow } from "../types.js";
 
 export const saveSearchHistory = async (
   userId: number,
-  query: string
+  query: string,
 ): Promise<void> => {
   await pool.query(
     `
     INSERT INTO search_history (user_id, query)
     VALUES ($1, $2)
     `,
-    [userId, query]
+    [userId, query],
   );
 };
 
 /* Basic Recommendation Algorithm */
 
 export const getRecommendations = async (
-  userId: number
+  userId: number,
 ): Promise<ProductRow[]> => {
   const result = await pool.query<ProductRow>(
     `
@@ -30,7 +30,7 @@ export const getRecommendations = async (
     ORDER BY p.created_at DESC
     LIMIT 10
     `,
-    [userId]
+    [userId],
   );
 
   return result.rows;

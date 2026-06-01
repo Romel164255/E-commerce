@@ -12,7 +12,7 @@ const loadRazorpayScript = () =>
     }
 
     const existingScript = document.querySelector(
-      `script[src="${RAZORPAY_SCRIPT_URL}"]`
+      `script[src="${RAZORPAY_SCRIPT_URL}"]`,
     );
 
     if (existingScript) {
@@ -70,24 +70,22 @@ export default function CheckoutPayment() {
           prefill: {
             name: "",
             email: "",
-            contact: ""
+            contact: "",
           },
 
           theme: {
-            color: "#000000"
-          }
+            color: "#000000",
+          },
         };
 
         const rzp = new window.Razorpay(options);
         rzp.open();
-
       } catch (err) {
         alert(err.response?.data?.error || "Payment failed");
       }
     };
 
     startPayment();
-
   }, [orderId, navigate]);
 
   if (!orderId) {

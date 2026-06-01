@@ -11,7 +11,7 @@ export default function CheckoutAddress() {
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
-    address_line: ""
+    address_line: "",
   });
 
   const autocompleteRef = useRef(null);
@@ -29,7 +29,7 @@ export default function CheckoutAddress() {
       {
         types: ["geocode"],
         componentRestrictions: { country: "in" },
-      }
+      },
     );
 
     autocomplete.addListener("place_changed", () => {
@@ -125,11 +125,10 @@ export default function CheckoutAddress() {
       setForm({
         full_name: "",
         phone: "",
-        address_line: ""
+        address_line: "",
       });
 
       await loadAddresses();
-
     } catch (err) {
       alert(err.response?.data?.error || "Failed to save address");
     } finally {
@@ -151,7 +150,7 @@ export default function CheckoutAddress() {
       setLoading(true);
 
       const res = await api.post("/orders/checkout", {
-        addressId: selected
+        addressId: selected,
       });
 
       navigate(`/checkout/payment?orderId=${res.data.orderId}`);
@@ -179,27 +178,21 @@ export default function CheckoutAddress() {
             className="input-field"
             placeholder="Enter Full Address"
             value={form.address_line}
-            onChange={e =>
-              setForm({ ...form, address_line: e.target.value })
-            }
+            onChange={(e) => setForm({ ...form, address_line: e.target.value })}
           />
 
           <input
             className="input-field"
             placeholder="Full Name"
             value={form.full_name}
-            onChange={e =>
-              setForm({ ...form, full_name: e.target.value })
-            }
+            onChange={(e) => setForm({ ...form, full_name: e.target.value })}
           />
 
           <input
             className="input-field"
             placeholder="Phone"
             value={form.phone}
-            onChange={e =>
-              setForm({ ...form, phone: e.target.value })
-            }
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
 
           <button
@@ -216,11 +209,9 @@ export default function CheckoutAddress() {
         {/* ================= SAVED ADDRESSES ================= */}
 
         <div className="saved-addresses">
-          {addresses.length === 0 && (
-            <p>No saved addresses yet</p>
-          )}
+          {addresses.length === 0 && <p>No saved addresses yet</p>}
 
-          {addresses.map(addr => (
+          {addresses.map((addr) => (
             <label key={addr.id} className="address-item">
               <input
                 type="radio"

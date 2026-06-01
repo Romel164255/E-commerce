@@ -6,10 +6,7 @@ import { z } from "zod";
 import { authenticateToken } from "../middleware/auth.js";
 import cloudinary from "../config/cloudinary.js";
 
-import {
-  createProduct,
-  getProducts,
-} from "../services/productService.js";
+import { createProduct, getProducts } from "../services/productService.js";
 
 const router = express.Router();
 
@@ -39,17 +36,11 @@ const createProductSchema = z.object({
    SAFE SORT
 =================================================== */
 
-const allowedSort = [
-  "new",
-  "price_asc",
-  "price_desc",
-] as const;
+const allowedSort = ["new", "price_asc", "price_desc"] as const;
 
 type AllowedSort = (typeof allowedSort)[number];
 
-function safeSort(
-  sort: string | undefined
-): AllowedSort {
+function safeSort(sort: string | undefined): AllowedSort {
   return (allowedSort as readonly string[]).includes(sort ?? "")
     ? (sort as AllowedSort)
     : "new";
@@ -60,7 +51,7 @@ function safeSort(
 =================================================== */
 
 async function uploadImage(
-  file: Express.Multer.File | undefined
+  file: Express.Multer.File | undefined,
 ): Promise<string | null> {
   if (!file) return null;
 
@@ -78,7 +69,7 @@ async function uploadImage(
           }
 
           resolve(result?.secure_url ?? null);
-        }
+        },
       )
       .end(file.buffer);
   });
@@ -93,10 +84,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const page = Math.max(
       1,
-      Math.min(
-        1000,
-        parseInt(req.query.page as string) || 1
-      )
+      Math.min(1000, parseInt(req.query.page as string) || 1),
     );
 
     const result = await getProducts({
@@ -108,7 +96,7 @@ router.get(
 
     res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
     res.json(result);
-  })
+  }),
 );
 
 /* ===================================================
@@ -146,7 +134,7 @@ router.post(
         error: "Product creation failed",
       });
     }
-  })
+  }),
 );
 
 export default router;

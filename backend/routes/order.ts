@@ -21,11 +21,11 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     const result = await createOrder(
       req.user!.userId!,
-      (req.body as { addressId: number }).addressId
+      (req.body as { addressId: number }).addressId,
     );
 
     res.status(201).json(result);
-  })
+  }),
 );
 
 /* ===================================================
@@ -36,13 +36,10 @@ router.post(
   "/:id/pay",
   authenticateToken,
   asyncHandler(async (req: Request, res: Response) => {
-    const result = await payOrder(
-      req.user!.userId!,
-      String(req.params.id)
-    );
+    const result = await payOrder(req.user!.userId!, String(req.params.id));
 
     res.json(result);
-  })
+  }),
 );
 
 /* ===================================================
@@ -53,14 +50,12 @@ router.get(
   "/",
   authenticateToken,
   asyncHandler(async (req: Request, res: Response) => {
-    const orders = await getUserOrders(
-      req.user!.userId!
-    );
+    const orders = await getUserOrders(req.user!.userId!);
 
     res.json({
       data: orders,
     });
-  })
+  }),
 );
 
 export default router;

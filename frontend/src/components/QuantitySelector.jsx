@@ -1,8 +1,4 @@
-export default function QuantitySelector({
-  quantity,
-  onDecrease,
-  onIncrease,
-}) {
+export default function QuantitySelector({ quantity, onDecrease, onIncrease }) {
   return (
     <div className="quantity-selector">
       <button className="qty-btn" onClick={onDecrease}>

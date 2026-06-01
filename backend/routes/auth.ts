@@ -21,7 +21,7 @@ router.post(
     const result = await registerUser(email, password);
 
     res.status(201).json(result);
-  })
+  }),
 );
 
 /* =============================
@@ -38,7 +38,7 @@ router.post(
     const result = await loginUser(email, password);
 
     res.json(result);
-  })
+  }),
 );
 
 /* =============================
@@ -48,7 +48,7 @@ router.post(
 // Redirect to Google
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", { scope: ["profile", "email"] }),
 );
 
 // Google Callback
@@ -61,13 +61,13 @@ router.get(
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET!,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     res.redirect(
-      `${process.env.FRONTEND_URL}/oauth?token=${token}&role=${user.role}`
+      `${process.env.FRONTEND_URL}/oauth?token=${token}&role=${user.role}`,
     );
-  }
+  },
 );
 
 export default router;

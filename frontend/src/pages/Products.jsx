@@ -51,7 +51,7 @@ export default function Products() {
   const isAuthenticated = Boolean(localStorage.getItem("token"));
   const cartByProductId = useMemo(
     () => new Map(cart.map((item) => [item.product_id, item])),
-    [cart]
+    [cart],
   );
 
   const handleAddToCart = async (product) => {
@@ -71,7 +71,7 @@ export default function Products() {
       page,
       ...(sort && { sort }),
       ...(gender && { gender }),
-      ...(category && { category })
+      ...(category && { category }),
     });
   }, [page, sort, gender, category, setSearchParams]);
 
@@ -88,7 +88,7 @@ export default function Products() {
           page,
           ...(sort && { sort }),
           ...(gender && { gender }),
-          ...(category && { category })
+          ...(category && { category }),
         });
 
         const res = await api.get(`/products?${params.toString()}`);
@@ -151,13 +151,25 @@ export default function Products() {
 
           {/* Filters */}
           <div className="filter-bar">
-            <select value={sort} onChange={(e) => { setPage(1); setSort(e.target.value); }}>
+            <select
+              value={sort}
+              onChange={(e) => {
+                setPage(1);
+                setSort(e.target.value);
+              }}
+            >
               <option value="">Sort</option>
               <option value="price_asc">Price: Low → High</option>
               <option value="price_desc">Price: High → Low</option>
             </select>
 
-            <select value={gender} onChange={(e) => { setPage(1); setGender(e.target.value); }}>
+            <select
+              value={gender}
+              onChange={(e) => {
+                setPage(1);
+                setGender(e.target.value);
+              }}
+            >
               <option value="">All Genders</option>
               <option value="Men">Men</option>
               <option value="Women">Women</option>
@@ -165,7 +177,13 @@ export default function Products() {
               <option value="Girls">Girls</option>
             </select>
 
-            <select value={category} onChange={(e) => { setPage(1); setCategory(e.target.value); }}>
+            <select
+              value={category}
+              onChange={(e) => {
+                setPage(1);
+                setCategory(e.target.value);
+              }}
+            >
               <option value="">All Categories</option>
               <option value="Apparel">Apparel</option>
               <option value="Footwear">Footwear</option>
@@ -188,7 +206,6 @@ export default function Products() {
 
               return (
                 <div key={p.id} className="product-card">
-
                   <img
                     src={buildImageUrl(300, p.image_url)}
                     srcSet={`
@@ -223,7 +240,6 @@ export default function Products() {
                       {isAuthenticated ? "Add to Cart" : "Login to Add"}
                     </button>
                   )}
-
                 </div>
               );
             })}
@@ -254,7 +270,6 @@ export default function Products() {
               </button>
             </div>
           )}
-
         </div>
       </div>
 

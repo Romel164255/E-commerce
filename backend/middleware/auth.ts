@@ -5,7 +5,7 @@ import type { JwtPayload } from "../types.js";
 export const authenticateToken = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   try {
     const authHeader = req.headers.authorization;
@@ -24,10 +24,7 @@ export const authenticateToken = (
       throw new Error("JWT_SECRET not configured");
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET
-    ) as JwtPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
 
     req.user = decoded;
 
@@ -38,9 +35,7 @@ export const authenticateToken = (
     res.status(403).json({
       success: false,
       error:
-        error.name === "TokenExpiredError"
-          ? "Token expired"
-          : "Invalid token",
+        error.name === "TokenExpiredError" ? "Token expired" : "Invalid token",
     });
   }
 };

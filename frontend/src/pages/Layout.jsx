@@ -24,7 +24,6 @@ export default function Layout() {
 
   return (
     <div className="layout">
-
       {/* ================= HEADER ================= */}
       <header className="header">
         <Link to="/" className="logo">
@@ -32,7 +31,6 @@ export default function Layout() {
         </Link>
 
         <div className="header-right">
-
           {/* 🛒 Cart */}
           <Link to="/cart" className="cart-link">
             Cart ({totalItems})
@@ -52,7 +50,6 @@ export default function Layout() {
             onMouseLeave={() => setMenuOpen(false)}
           >
             👤 Account
-
             {menuOpen && (
               <div className="dropdown">
                 {token ? (
@@ -66,7 +63,6 @@ export default function Layout() {
               </div>
             )}
           </div>
-
         </div>
       </header>
 
@@ -79,7 +75,6 @@ export default function Layout() {
       <footer className="footer">
         <p>© {new Date().getFullYear()} Outfito. All rights reserved.</p>
       </footer>
-
     </div>
   );
 }

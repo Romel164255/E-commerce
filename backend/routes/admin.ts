@@ -39,11 +39,11 @@ router.get(
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2
         `,
-        [limit, offset]
+        [limit, offset],
       );
 
       const total = await pool.query<{ count: string }>(
-        "SELECT COUNT(*) FROM users"
+        "SELECT COUNT(*) FROM users",
       );
 
       const totalCount = parseInt(total.rows[0].count);
@@ -61,7 +61,7 @@ router.get(
         error: "Failed to fetch users",
       });
     }
-  }
+  },
 );
 
 // Update user role
@@ -79,7 +79,7 @@ router.patch(
         SET role = $1
         WHERE id = $2
         `,
-        [role, req.params.id]
+        [role, req.params.id],
       );
 
       res.json({
@@ -92,7 +92,7 @@ router.patch(
         error: "Failed to update role",
       });
     }
-  }
+  },
 );
 
 /* =====================================================
@@ -133,7 +133,7 @@ router.get(
       const total = await pool.query<{ count: string }>(
         lowStock
           ? "SELECT COUNT(*) FROM products WHERE stock < 5"
-          : "SELECT COUNT(*) FROM products"
+          : "SELECT COUNT(*) FROM products",
       );
 
       const totalCount = parseInt(total.rows[0].count);
@@ -151,7 +151,7 @@ router.get(
         error: "Failed to fetch products",
       });
     }
-  }
+  },
 );
 
 // Update stock
@@ -172,7 +172,7 @@ router.patch(
             updated_at = NOW()
         WHERE id = $2
         `,
-        [stock, req.params.id]
+        [stock, req.params.id],
       );
 
       res.json({
@@ -185,7 +185,7 @@ router.patch(
         error: "Update failed",
       });
     }
-  }
+  },
 );
 
 // CSV bulk upload
@@ -269,7 +269,7 @@ router.post(
                   title = EXCLUDED.title,
                   updated_at = NOW()
             `,
-            [productCodes, titles, prices, stocks]
+            [productCodes, titles, prices, stocks],
           );
 
           res.json({
@@ -293,7 +293,7 @@ router.post(
           error: "Failed to process CSV",
         });
       });
-  }
+  },
 );
 
 /* =====================================================
@@ -325,9 +325,7 @@ router.get(
     }
 
     const whereClause =
-      filters.length > 0
-        ? `WHERE ${filters.join(" AND ")}`
-        : "";
+      filters.length > 0 ? `WHERE ${filters.join(" AND ")}` : "";
 
     try {
       const result = await pool.query(
@@ -375,7 +373,7 @@ router.get(
           a.pincode
         ORDER BY o.created_at DESC
         `,
-        values
+        values,
       );
 
       res.json(result.rows);
@@ -386,7 +384,7 @@ router.get(
         error: "Failed to fetch orders",
       });
     }
-  }
+  },
 );
 
 /* =====================================================
@@ -406,7 +404,7 @@ router.get(
           SELECT COALESCE(SUM(total),0)
           FROM orders
           WHERE status='PAID'
-          `
+          `,
         ),
         pool.query<{ count: string }>("SELECT COUNT(*) FROM orders"),
         pool.query<{ count: string }>("SELECT COUNT(*) FROM users"),
@@ -424,7 +422,7 @@ router.get(
         error: "Failed to fetch stats",
       });
     }
-  }
+  },
 );
 
 // Weekly stats
@@ -454,7 +452,7 @@ router.get(
         error: "Failed to fetch weekly stats",
       });
     }
-  }
+  },
 );
 
 // Monthly stats
@@ -484,7 +482,7 @@ router.get(
         error: "Failed to fetch monthly stats",
       });
     }
-  }
+  },
 );
 
 export default router;

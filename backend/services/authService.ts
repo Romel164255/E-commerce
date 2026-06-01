@@ -5,7 +5,7 @@ import type { AuthResult, UserRow } from "../types.js";
 
 export const registerUser = async (
   email: string,
-  password: string
+  password: string,
 ): Promise<AuthResult> => {
   try {
     const hashed = await bcrypt.hash(password, 10);
@@ -14,7 +14,7 @@ export const registerUser = async (
       `INSERT INTO users (email, password_hash)
        VALUES ($1, $2)
        RETURNING id, email, role`,
-      [email, hashed]
+      [email, hashed],
     );
 
     const user = result.rows[0];
@@ -22,7 +22,7 @@ export const registerUser = async (
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET!,
-      { expiresIn: "1h" }
+      { expiresIn: "1h" },
     );
 
     return { token, role: user.role };
@@ -35,11 +35,11 @@ export const registerUser = async (
 
 export const loginUser = async (
   email: string,
-  password: string
+  password: string,
 ): Promise<AuthResult> => {
   const result = await pool.query<UserRow>(
     "SELECT * FROM users WHERE email = $1",
-    [email]
+    [email],
   );
 
   if (result.rows.length === 0) {
@@ -57,7 +57,7 @@ export const loginUser = async (
   const token = jwt.sign(
     { userId: user.id, role: user.role },
     process.env.JWT_SECRET!,
-    { expiresIn: "1h" }
+    { expiresIn: "1h" },
   );
 
   return { token, role: user.role };

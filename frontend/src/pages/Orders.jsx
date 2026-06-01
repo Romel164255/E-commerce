@@ -27,17 +27,12 @@ export default function Orders() {
     <div className="orders-container">
       <h2 className="orders-title">My Orders</h2>
 
-      {orders.length === 0 && (
-        <p className="empty-orders">No orders yet</p>
-      )}
+      {orders.length === 0 && <p className="empty-orders">No orders yet</p>}
 
       {orders.map((order) => (
         <div key={order.id} className="order-card">
-
           <div className="order-header">
-            <span className="order-id">
-              Order #{order.id}
-            </span>
+            <span className="order-id">Order #{order.id}</span>
 
             <span className={`order-status status-${order.status}`}>
               {order.status}

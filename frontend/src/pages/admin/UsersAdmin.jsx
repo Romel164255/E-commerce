@@ -59,7 +59,7 @@ export default function UsersAdmin() {
         </thead>
 
         <tbody>
-          {users.map(u => (
+          {users.map((u) => (
             <tr key={u.id}>
               <td>{u.email}</td>
               <td>{u.role}</td>

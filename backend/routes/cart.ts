@@ -24,14 +24,10 @@ router.post(
       quantity: number;
     };
 
-    const cartItem = await addToCart(
-      req.user!.userId!,
-      productId,
-      quantity
-    );
+    const cartItem = await addToCart(req.user!.userId!, productId, quantity);
 
     res.status(201).json(cartItem);
-  })
+  }),
 );
 
 /* ===================================================
@@ -42,12 +38,10 @@ router.get(
   "/",
   authenticateToken,
   asyncHandler(async (req: Request, res: Response) => {
-    const cartItems = await getCartItems(
-      req.user!.userId!
-    );
+    const cartItems = await getCartItems(req.user!.userId!);
 
     res.json(cartItems);
-  })
+  }),
 );
 
 /* ===================================================
@@ -60,11 +54,11 @@ router.delete(
   asyncHandler(async (req: Request, res: Response) => {
     const result = await removeCartItem(
       req.user!.userId!,
-      String(req.params.id)
+      String(req.params.id),
     );
 
     res.json(result);
-  })
+  }),
 );
 
 export default router;

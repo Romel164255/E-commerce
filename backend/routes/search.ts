@@ -20,13 +20,13 @@ router.post(
   asyncHandler(async (req: Request, res: Response) => {
     await saveSearchHistory(
       req.user!.userId!,
-      (req.body as { query: string }).query
+      (req.body as { query: string }).query,
     );
 
     res.json({
       message: "Search saved",
     });
-  })
+  }),
 );
 
 /* ===================================================
@@ -37,12 +37,10 @@ router.get(
   "/recommendations",
   authenticateToken,
   asyncHandler(async (req: Request, res: Response) => {
-    const result = await getRecommendations(
-      req.user!.userId!
-    );
+    const result = await getRecommendations(req.user!.userId!);
 
     res.json(result);
-  })
+  }),
 );
 
 export default router;

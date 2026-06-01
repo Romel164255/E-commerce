@@ -12,7 +12,7 @@ export const addAddress = async (
     full_name: string;
     phone: string;
     address_line: string;
-  }
+  },
 ): Promise<AddressRow> => {
   const { full_name, phone, address_line } = data;
 
@@ -27,7 +27,7 @@ export const addAddress = async (
         address: address_line,
         key: process.env.GOOGLE_SERVER_API_KEY,
       },
-    }
+    },
   );
 
   if (!geoRes.data.results.length) {
@@ -58,7 +58,17 @@ export const addAddress = async (
     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
     RETURNING *
     `,
-    [userId, full_name, phone, formatted_address, city, state, pincode, lat, lng]
+    [
+      userId,
+      full_name,
+      phone,
+      formatted_address,
+      city,
+      state,
+      pincode,
+      lat,
+      lng,
+    ],
   );
 
   return dbResult.rows[0];
@@ -69,11 +79,11 @@ export const addAddress = async (
 =============================== */
 
 export const getUserAddresses = async (
-  userId: number
+  userId: number,
 ): Promise<AddressRow[]> => {
   const result = await pool.query<AddressRow>(
     "SELECT * FROM addresses WHERE user_id = $1 ORDER BY id DESC",
-    [userId]
+    [userId],
   );
 
   return result.rows;

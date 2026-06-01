@@ -41,10 +41,7 @@ export const getProducts = async ({
 
   try {
     const countQuery = `SELECT COUNT(*) FROM products ${whereSQL}`;
-    const countResult = await pool.query<{ count: string }>(
-      countQuery,
-      values
-    );
+    const countResult = await pool.query<{ count: string }>(countQuery, values);
 
     const total = parseInt(countResult.rows[0].count);
     const totalPages = Math.ceil(total / limit);
@@ -99,7 +96,7 @@ export const createProduct = async ({
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *
       `,
-      [title, description, price, stock, image_url]
+      [title, description, price, stock, image_url],
     );
 
     return result.rows[0];

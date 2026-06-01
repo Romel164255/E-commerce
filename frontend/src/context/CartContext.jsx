@@ -27,60 +27,69 @@ export const CartProvider = ({ children }) => {
      ADD TO CART (BACKEND)
   =============================== */
 
-  const addToCart = useCallback(async (product) => {
-    try {
-      await api.post("/cart", {
-        productId: Number(product.id),
-        quantity: 1,
-      });
+  const addToCart = useCallback(
+    async (product) => {
+      try {
+        await api.post("/cart", {
+          productId: Number(product.id),
+          quantity: 1,
+        });
 
-      await fetchCart();
-    } catch (err) {
-      alert(err.response?.data?.error || "Failed to add to cart");
-    }
-  }, [fetchCart]);
+        await fetchCart();
+      } catch (err) {
+        alert(err.response?.data?.error || "Failed to add to cart");
+      }
+    },
+    [fetchCart],
+  );
 
   /* ===============================
      REMOVE ITEM
   =============================== */
 
-  const removeItem = useCallback(async (cartItemId) => {
-    try {
-      await api.delete(`/cart/${cartItemId}`);
-      await fetchCart();
-    } catch {
-      alert("Failed to remove item");
-    }
-  }, [fetchCart]);
+  const removeItem = useCallback(
+    async (cartItemId) => {
+      try {
+        await api.delete(`/cart/${cartItemId}`);
+        await fetchCart();
+      } catch {
+        alert("Failed to remove item");
+      }
+    },
+    [fetchCart],
+  );
 
   /* ===============================
      UPDATE QUANTITY
   =============================== */
 
-  const updateQuantity = useCallback(async (cartItemId, newQty) => {
-    const cartItem = cart.find((item) => item.id === cartItemId);
+  const updateQuantity = useCallback(
+    async (cartItemId, newQty) => {
+      const cartItem = cart.find((item) => item.id === cartItemId);
 
-    if (!cartItem) {
-      alert("Cart item not found");
-      return;
-    }
+      if (!cartItem) {
+        alert("Cart item not found");
+        return;
+      }
 
-    if (newQty <= 0) {
-      await removeItem(cartItemId);
-      return;
-    }
+      if (newQty <= 0) {
+        await removeItem(cartItemId);
+        return;
+      }
 
-    try {
-      await api.post("/cart", {
-        productId: cartItem.product_id,
-        quantity: newQty - cartItem.quantity,
-      });
+      try {
+        await api.post("/cart", {
+          productId: cartItem.product_id,
+          quantity: newQty - cartItem.quantity,
+        });
 
-      await fetchCart();
-    } catch {
-      alert("Failed to update quantity");
-    }
-  }, [cart, fetchCart, removeItem]);
+        await fetchCart();
+      } catch {
+        alert("Failed to update quantity");
+      }
+    },
+    [cart, fetchCart, removeItem],
+  );
 
   /* ===============================
      TOTALS
@@ -88,11 +97,11 @@ export const CartProvider = ({ children }) => {
 
   const totalItems = useMemo(
     () => cart.reduce((sum, item) => sum + item.quantity, 0),
-    [cart]
+    [cart],
   );
   const totalPrice = useMemo(
     () => cart.reduce((sum, item) => sum + item.quantity * item.price, 0),
-    [cart]
+    [cart],
   );
 
   /* ===============================
@@ -141,12 +150,8 @@ export const CartProvider = ({ children }) => {
       totalItems,
       totalPrice,
       fetchCart,
-    ]
+    ],
   );
 
-  return (
-    <CartContext.Provider value={value}>
-      {children}
-    </CartContext.Provider>
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

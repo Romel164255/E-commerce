@@ -4,22 +4,21 @@ import { useEffect } from "react";
 export default function AdminLayout() {
   const navigate = useNavigate();
 
- useEffect(() => {
-  const role = localStorage.getItem("role");
+  useEffect(() => {
+    const role = localStorage.getItem("role");
 
-  if (!role) {
-    navigate("/auth");
-    return;
-  }
+    if (!role) {
+      navigate("/auth");
+      return;
+    }
 
-  if (role.toUpperCase() !== "ADMIN") {
-    navigate("/");
-  }
-}, [navigate]);
+    if (role.toUpperCase() !== "ADMIN") {
+      navigate("/");
+    }
+  }, [navigate]);
 
   return (
     <div className="admin-container">
-
       <aside className="admin-sidebar">
         <h2 className="logo">Admin Panel</h2>
 
@@ -34,7 +33,6 @@ export default function AdminLayout() {
       <main className="admin-main">
         <Outlet />
       </main>
-
     </div>
   );
 }

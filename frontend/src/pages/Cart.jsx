@@ -3,20 +3,15 @@ import { useNavigate } from "react-router-dom";
 import QuantitySelector from "../components/QuantitySelector";
 
 export default function Cart() {
-  const {
-    cart,
-    totalItems,
-    totalPrice,
-    updateQuantity,
-    removeItem,
-  } = useCart();
+  const { cart, totalItems, totalPrice, updateQuantity, removeItem } =
+    useCart();
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const handleProceed = (e) => {
-    e.preventDefault();   // prevent form submit
-    e.stopPropagation();  // extra safety
+    e.preventDefault(); // prevent form submit
+    e.stopPropagation(); // extra safety
 
     if (!token) {
       navigate("/auth");
@@ -36,10 +31,7 @@ export default function Cart() {
             Subtotal ({totalItems} items): ₹{totalPrice}
           </h3>
 
-          <button
-            type="button"
-            onClick={handleProceed}
-          >
+          <button type="button" onClick={handleProceed}>
             Proceed to Buy
           </button>
         </div>
@@ -52,18 +44,11 @@ export default function Cart() {
 
           <QuantitySelector
             quantity={item.quantity}
-            onDecrease={() =>
-              updateQuantity(item.id, item.quantity - 1)
-            }
-            onIncrease={() =>
-              updateQuantity(item.id, item.quantity + 1)
-            }
+            onDecrease={() => updateQuantity(item.id, item.quantity - 1)}
+            onIncrease={() => updateQuantity(item.id, item.quantity + 1)}
           />
 
-          <button
-            type="button"
-            onClick={() => removeItem(item.id)}
-          >
+          <button type="button" onClick={() => removeItem(item.id)}>
             Remove
           </button>
         </div>

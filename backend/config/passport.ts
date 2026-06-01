@@ -21,7 +21,7 @@ export default function configurePassport(): void {
 
           const result = await pool.query<UserRow>(
             "SELECT * FROM users WHERE email = $1",
-            [email]
+            [email],
           );
 
           let user: UserRow;
@@ -29,7 +29,7 @@ export default function configurePassport(): void {
           if (result.rows.length === 0) {
             const newUser = await pool.query<UserRow>(
               "INSERT INTO users (email, role) VALUES ($1, $2) RETURNING *",
-              [email, "user"]
+              [email, "user"],
             );
             user = newUser.rows[0];
           } else {
@@ -40,7 +40,7 @@ export default function configurePassport(): void {
         } catch (err) {
           done(err as Error, undefined);
         }
-      }
-    )
+      },
+    ),
   );
 }

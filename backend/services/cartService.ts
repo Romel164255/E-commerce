@@ -8,7 +8,7 @@ import type { CartItemRow, CartItemWithProduct } from "../types.js";
 export const addToCart = async (
   userId: number,
   productId: number,
-  quantity: number
+  quantity: number,
 ): Promise<CartItemRow> => {
   // 1️⃣ Check product exists + stock and current quantity in cart
   const productCheck = await pool.query<{
@@ -25,7 +25,7 @@ export const addToCart = async (
      AND c.user_id = $2
     WHERE p.id = $1
     `,
-    [productId, userId]
+    [productId, userId],
   );
 
   if (productCheck.rows.length === 0) {
@@ -58,7 +58,7 @@ export const addToCart = async (
           VALUES ($1, $2, $3)
           RETURNING *
           `,
-          [userId, productId, quantity]
+          [userId, productId, quantity],
         )
       : await pool.query<CartItemRow>(
           `
@@ -67,7 +67,7 @@ export const addToCart = async (
           WHERE user_id = $2 AND product_id = $3
           RETURNING *
           `,
-          [quantity, userId, productId]
+          [quantity, userId, productId],
         );
 
   return result.rows[0];
@@ -78,7 +78,7 @@ export const addToCart = async (
 =============================== */
 
 export const getCartItems = async (
-  userId: number
+  userId: number,
 ): Promise<CartItemWithProduct[]> => {
   const result = await pool.query<CartItemWithProduct & { price: string }>(
     `
@@ -93,7 +93,7 @@ export const getCartItems = async (
     JOIN products p ON c.product_id = p.id
     WHERE c.user_id = $1
     `,
-    [userId]
+    [userId],
   );
 
   return result.rows.map((item) => ({
@@ -108,14 +108,14 @@ export const getCartItems = async (
 
 export const removeCartItem = async (
   userId: number,
-  cartItemId: string
+  cartItemId: string,
 ): Promise<{ message: string }> => {
   await pool.query(
     `
     DELETE FROM cart_items
     WHERE id = $1 AND user_id = $2
     `,
-    [cartItemId, userId]
+    [cartItemId, userId],
   );
 
   return { message: "Item removed" };

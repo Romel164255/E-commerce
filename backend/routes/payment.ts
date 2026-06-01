@@ -41,7 +41,7 @@ router.post("/verify", async (req: Request, res: Response) => {
       WHERE razorpay_order_id = $1
       FOR UPDATE
       `,
-      [razorpay_order_id]
+      [razorpay_order_id],
     );
 
     if (!orderResult.rows.length) {
@@ -67,7 +67,7 @@ router.post("/verify", async (req: Request, res: Response) => {
         AND p.stock < oi.quantity
       LIMIT 1
       `,
-      [order.id]
+      [order.id],
     );
 
     if (insufficientStock.rows.length > 0) {
@@ -85,7 +85,7 @@ router.post("/verify", async (req: Request, res: Response) => {
           updated_at = NOW()
       WHERE id = $3
       `,
-      [razorpay_payment_id, razorpay_signature, order.id]
+      [razorpay_payment_id, razorpay_signature, order.id],
     );
 
     // Deduct stock exactly once after payment verification.
@@ -97,7 +97,7 @@ router.post("/verify", async (req: Request, res: Response) => {
       WHERE oi.product_id = p.id
         AND oi.order_id = $1
       `,
-      [order.id]
+      [order.id],
     );
 
     await client.query("COMMIT");
