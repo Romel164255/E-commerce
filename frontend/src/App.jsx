@@ -16,6 +16,10 @@ const ProductsAdmin = lazy(() => import("./pages/admin/ProductsAdmin"));
 const UsersAdmin = lazy(() => import("./pages/admin/UsersAdmin"));
 const OrdersAdmin = lazy(() => import("./pages/admin/OrdersAdmin"));
 const Analytics = lazy(() => import("./pages/admin/Analytics"));
+const TicketsAdmin = lazy(() => import("./pages/admin/TicketsAdmin"));
+const AdminTicketDetail = lazy(() => import("./pages/admin/AdminTicketDetail"));
+const Tickets = lazy(() => import("./pages/Tickets"));
+const TicketDetail = lazy(() => import("./pages/TicketDetail"));
 
 function RouteFallback() {
   return <p>Loading...</p>;
@@ -30,6 +34,8 @@ function App() {
           <Route index element={<Products />} />
           <Route path="cart" element={<Cart />} />
           <Route path="orders" element={<Orders />} />
+          <Route path="tickets" element={<Tickets />} />
+          <Route path="tickets/:id" element={<TicketDetail />} />
           <Route path="auth" element={<Auth />} />
           <Route path="checkout/address" element={<CheckoutAddress />} />
           <Route path="checkout/payment" element={<CheckoutPayment />} />
@@ -40,6 +46,8 @@ function App() {
             <Route path="users" element={<UsersAdmin />} />
             <Route path="orders" element={<OrdersAdmin />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="tickets" element={<TicketsAdmin />} />
+            <Route path="tickets/:id" element={<AdminTicketDetail />} />
           </Route>
         </Route>
       </Routes>

@@ -17,6 +17,8 @@ import searchRoutes from "./routes/search.js";
 import paymentRoutes from "./routes/payment.js";
 import adminRoutes from "./routes/admin.js";
 import statsRoutes from "./routes/stats.js";
+import ticketRoutes from "./routes/tickets.js";
+import adminTicketRoutes from "./routes/adminTickets.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
 import {
@@ -115,6 +117,8 @@ app.use("/search", searchRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/admin", adminRoutes);
 app.use("/api", statsRoutes);
+app.use("/tickets", ticketRoutes);
+app.use("/admin/tickets", adminTicketRoutes);
 
 /* ===============================
    ERROR HANDLER

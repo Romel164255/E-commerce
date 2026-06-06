@@ -27,6 +27,7 @@ export default function AdminLayout() {
           <NavLink to="products">Products</NavLink>
           <NavLink to="users">Users</NavLink>
           <NavLink to="orders">Orders</NavLink>
+          <NavLink to="tickets">Tickets</NavLink>
         </nav>
       </aside>
 

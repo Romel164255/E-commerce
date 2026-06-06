@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 
 export default function Orders() {
@@ -53,6 +53,29 @@ export default function Orders() {
             >
               Continue Payment
             </button>
+          )}
+
+          {["PAID", "SHIPPED", "DELIVERED"].includes(order.status) && (
+            <Link
+              to={`/tickets?orderId=${order.id}`}
+              className="raise-ticket-btn"
+              style={{
+                display: "inline-block",
+                marginTop: "0.5rem",
+                fontSize: "0.78rem",
+                fontWeight: 700,
+                letterSpacing: "0.06em",
+                textTransform: "uppercase",
+                color: "#6b7280",
+                textDecoration: "none",
+                border: "1px solid #e0d9cf",
+                borderRadius: "3px",
+                padding: "5px 12px",
+                transition: "border-color 0.2s",
+              }}
+            >
+              Raise Return / Refund
+            </Link>
           )}
         </div>
       ))}

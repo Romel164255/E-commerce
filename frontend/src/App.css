@@ -1518,3 +1518,402 @@ img {
 .file-upload-label:active {
   transform: scale(0.97);
 }
+
+/* ============================================================
+   TICKET SYSTEM STYLES
+============================================================ */
+
+/* --- User: Ticket List Page --- */
+.tickets-container {
+  max-width: 760px;
+  margin: 2.5rem auto;
+  padding: 0 1.5rem;
+  font-family: var(--font-body);
+}
+
+.tickets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.8rem;
+}
+
+.tickets-title {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  color: var(--black);
+}
+
+.empty-tickets {
+  color: var(--gray-500);
+  text-align: center;
+  padding: 3rem 0;
+}
+
+/* New Ticket Form card */
+.ticket-form-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 1.6rem;
+  margin-bottom: 1.8rem;
+  box-shadow: var(--shadow-sm);
+}
+.ticket-form-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--black);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+.form-group label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-700);
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--cream);
+  color: var(--black);
+  outline: none;
+  transition: border var(--transition);
+  resize: vertical;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--accent);
+}
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+.ticket-error {
+  background: #fff0f0;
+  border: 1px solid #fcc;
+  color: var(--danger);
+  padding: 0.55rem 0.9rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Ticket list card */
+.ticket-card {
+  display: block;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.4rem;
+  margin-bottom: 0.9rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), transform var(--transition);
+  color: var(--black);
+}
+.ticket-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.ticket-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.45rem;
+}
+.ticket-id {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  letter-spacing: 0.05em;
+}
+
+.ticket-subject {
+  font-size: 0.97rem;
+  font-weight: 500;
+  margin: 0 0 0.3rem;
+}
+.ticket-meta {
+  font-size: 0.76rem;
+  color: var(--gray-500);
+}
+
+.ticket-type-badge,
+.ticket-status-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+/* --- Ticket Detail / Thread --- */
+.ticket-detail-container {
+  max-width: 760px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  font-family: var(--font-body);
+}
+
+.ticket-back-link {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: var(--gray-500);
+  text-decoration: none;
+  margin-bottom: 1.2rem;
+  transition: color var(--transition);
+}
+.ticket-back-link:hover {
+  color: var(--black);
+}
+
+.ticket-detail-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.ticket-detail-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  margin: 0 0 0.3rem;
+}
+
+.admin-ticket-status-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+/* Message thread */
+.ticket-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 120px;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--gray-100);
+  border-radius: var(--radius-md);
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.ticket-message {
+  display: flex;
+}
+.msg-user {
+  justify-content: flex-end;
+}
+.msg-admin {
+  justify-content: flex-start;
+}
+
+.msg-bubble {
+  max-width: 72%;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+}
+.msg-user .msg-bubble {
+  background: var(--black);
+  color: var(--white);
+  border-bottom-right-radius: 4px;
+}
+.msg-admin .msg-bubble {
+  background: var(--white);
+  color: var(--black);
+  border: 1px solid var(--gray-200);
+  border-bottom-left-radius: 4px;
+}
+
+.msg-text {
+  margin: 0 0 0.3rem;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.msg-time {
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
+/* Reply box */
+.ticket-reply-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.ticket-reply-input {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--cream);
+  resize: vertical;
+  outline: none;
+  transition: border var(--transition);
+}
+.ticket-reply-input:focus {
+  border-color: var(--accent);
+}
+
+.ticket-closed-notice {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  text-align: center;
+  padding: 1rem;
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+}
+
+/* --- Admin Tickets Table --- */
+.admin-tickets-container {
+  padding: 1.5rem;
+  font-family: var(--font-body);
+}
+
+.admin-section-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin-bottom: 1.2rem;
+  color: var(--black);
+}
+
+.admin-tickets-filters {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1.4rem;
+}
+.admin-tickets-filters select {
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  cursor: pointer;
+}
+
+.admin-tickets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+.admin-tickets-table th {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  background: var(--gray-100);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-700);
+}
+.admin-tickets-table td {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: middle;
+}
+.admin-tickets-table tr:hover td {
+  background: var(--cream);
+}
+
+.ticket-subject-cell {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ticket-type-small {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-700);
+}
+
+/* Shared buttons */
+.btn-primary {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.6rem 1.3rem;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity var(--transition), transform var(--transition);
+  align-self: flex-start;
+}
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.82;
+  transform: translateY(-1px);
+}
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn-sm-primary {
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  background: var(--black);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: opacity var(--transition);
+}
+.btn-sm-primary:hover {
+  opacity: 0.75;
+}
+
+.btn-sm-outline {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--gray-700);
+  transition: border-color var(--transition), color var(--transition);
+  white-space: nowrap;
+}
+.btn-sm-outline:hover:not(:disabled) {
+  border-color: var(--black);
+  color: var(--black);
+}
+.btn-sm-outline:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

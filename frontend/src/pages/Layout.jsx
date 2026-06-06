@@ -36,6 +36,18 @@ export default function Layout() {
             Cart ({totalItems})
           </Link>
 
+          {/* 📦 Orders + 🎫 Tickets (for logged-in users) */}
+          {token && (
+            <>
+              <Link to="/orders" className="cart-link">
+                Orders
+              </Link>
+              <Link to="/tickets" className="cart-link">
+                Support
+              </Link>
+            </>
+          )}
+
           {/* 👑 Admin Link */}
           {token && role === "ADMIN" && (
             <Link to="/admin" className="admin-link">
