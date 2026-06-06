@@ -11,3 +11,8 @@ coverage/
 npm-debug.log*
 
 .DS_Store
+
+node_modules/
+backend/node_modules/
+.env
+backend/.env
