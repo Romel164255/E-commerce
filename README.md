@@ -3,7 +3,9 @@ A full-stack e-commerce web application built using the PERN stack (PostgreSQL, 
 The application allows users to browse products, authenticate securely, manage carts, and place orders.
 The project demonstrates REST API development, authentication with JWT, database integration, and full-stack architecture.
 
---------------------------------------------Live Demo----------------------------------------
+---
+
+-----------------------------------------Live Demo----------------------------------------
 Frontend: https://e-commerce-hazel-chi.vercel.app
 Repository : https://github.com/Romel164255/E-commerce
 
@@ -48,17 +50,17 @@ Vercel (deployment)
 E-commerce
 │
 ├── backend
-│   ├── controllers
-│   ├── routes
-│   ├── middleware
-│   ├── models
-│   └── server.js
+│ ├── controllers
+│ ├── routes
+│ ├── middleware
+│ ├── models
+│ └── server.js
 │
 ├── frontend
-│   ├── src
-│   ├── components
-│   ├── pages
-│   └── App.js
+│ ├── src
+│ ├── components
+│ ├── pages
+│ └── App.js
 │
 └── README.md
 ----------------------------------------------Installation-------------------------------------------------------
@@ -211,3 +213,5 @@ https://github.com/Romel164255
 
 LinkedIn
 https://linkedin.com/in/romel-augustine-fernandez-775a643aa
+
+wallet
