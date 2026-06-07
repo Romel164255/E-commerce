@@ -15,7 +15,8 @@ const validTransitions: Record<string, string[]> = {
   PENDING: ["PAID", "CANCELLED"],
   PAID: ["SHIPPED"],
   SHIPPED: ["DELIVERED"],
-  DELIVERED: [],
+  DELIVERED: ["RETURN_REQUESTED"],
+  RETURN_REQUESTED: ["CANCELLED"],   // admin approves return → cancel+refund
   CANCELLED: [],
 };
 
@@ -190,4 +191,17 @@ export const getUserOrders = async (userId: number): Promise<OrderRow[]> => {
   );
 
   return result.rows;
+};
+
+/* ===============================
+   SET delivered_at WHEN DELIVERED
+   Call this from admin order update
+=============================== */
+export const markOrderDelivered = async (orderId: number): Promise<void> => {
+  await pool.query(
+    `UPDATE orders
+     SET status = 'DELIVERED', delivered_at = NOW(), updated_at = NOW()
+     WHERE id = $1`,
+    [orderId],
+  );
 };
